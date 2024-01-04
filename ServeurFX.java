@@ -19,11 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServeurFX extends Application {
-    private Map<String, PrintWriter> clientsConnectes = new HashMap<>();
-    private ObservableList<String> listeClients = FXCollections.observableArrayList();
+    private Map<String, PrintWriter> connectedClients = new HashMap<>();
+    private ObservableList<String> clientList = FXCollections.observableArrayList();
     private TextArea serverLog = new TextArea();
-    private ListView<String> clientsListView = new ListView<>(listeClients);
-    private String idClient;  // Déplacer la déclaration de la variable à l'extérieur du bloc try
+    private ListView<String> clientsListView = new ListView<>(clientList);
 
     public static void main(String[] args) {
         launch(args);
@@ -46,60 +45,67 @@ public class ServeurFX extends Application {
 
         primaryStage.show();
 
-        new Thread(this::demarrerServeur).start();
+        new Thread(this::startServer).start();
     }
 
-    private void demarrerServeur() {
+    private void startServer() {
         try {
-            ServerSocket serveurSocket = new ServerSocket(12345);
-            Platform.runLater(() -> serverLog.appendText("Serveur à l'écoute sur le port 12345\n"));
+            ServerSocket serverSocket = new ServerSocket(12345);
+            Platform.runLater(() -> serverLog.appendText("Server listening on port 12345\n"));
 
             while (true) {
-                Socket clientSocket = serveurSocket.accept();
-                new Thread(() -> gererClient(clientSocket)).start();
+                Socket clientSocket = serverSocket.accept();
+                new Thread(() -> handleClient(clientSocket)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void gererClient(Socket clientSocket) {
+    private void handleClient(Socket clientSocket) {
         try {
-            BufferedReader lecteurClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter reponseServeur = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter serverResponse = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            // Lire l'ID du client
-            idClient = lecteurClient.readLine();
-            clientsConnectes.put(idClient, reponseServeur);
+            String clientId = clientReader.readLine();
+            connectedClients.put(clientId, serverResponse);
+            updateClientListView();
 
-            Platform.runLater(() -> {
-                serverLog.appendText("Client " + idClient + " connecté au serveur !\n");
-                listeClients.add(idClient);
-            });
+            Platform.runLater(() -> serverLog.appendText("Client " + clientId + " connected to the server!\n"));
 
             String message;
-            while ((message = lecteurClient.readLine()) != null) {
-                final String[] finalMessage = {message};
-                Platform.runLater(() -> serverLog.appendText("Client " + idClient + ": " + finalMessage[0] + "\n"));
+            while ((message = clientReader.readLine()) != null) {
+                final String finalClientId = clientId;
+                final String finalMessage = message;
+                Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
 
-                for (PrintWriter destinaireWriter : clientsConnectes.values()) {
-                    destinaireWriter.println("Client " + idClient + ": " + finalMessage[0]);
+                for (PrintWriter destinationWriter : connectedClients.values()) {
+                    destinationWriter.println("Client " + finalClientId + ": " + finalMessage);
+                }
+
+                if (message.startsWith("@")) {
+                    String[] parts = message.split(" ", 2);
+                    if (parts.length == 2) {
+                        String[] recipients = parts[0].substring(1).split(",");
+                        sendClientListToOne(clientId, recipients);
+                    }
                 }
             }
 
-            lecteurClient.close();
-            clientsConnectes.remove(idClient);
+            try {
+                clientReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            connectedClients.remove(clientId);
+            updateClientListView();
+
             Platform.runLater(() -> {
-                serverLog.appendText("Client " + idClient + " déconnecté.\n");
-                listeClients.remove(idClient);
+                serverLog.appendText("Client " + clientId + " disconnected.\n");
             });
         } catch (IOException e) {
-            // Gérer l'exception liée à la déconnexion du client
             e.printStackTrace();
-            Platform.runLater(() -> {
-                serverLog.appendText("Client " + idClient + " déconnecté (erreur).\n");
-                listeClients.remove(idClient);
-            });
         }
     }
 
@@ -107,5 +113,49 @@ public class ServeurFX extends Application {
         Platform.runLater(() -> {
             System.exit(0);
         });
+    }
+
+    private void updateClientListView() {
+        Platform.runLater(() -> {
+            clientList.setAll(connectedClients.keySet());
+            sendClientListToAll();
+        });
+    }
+
+    private void sendClientListToAll() {
+        StringBuilder clientListString = new StringBuilder();
+        for (String client : clientList) {
+            clientListString.append(client).append(",");
+        }
+        if (clientListString.length() > 0) {
+            clientListString.setLength(clientListString.length() - 1); // Remove the trailing comma
+        }
+
+        for (PrintWriter writer : connectedClients.values()) {
+            writer.println("CLIENT_LIST " + clientListString.toString());
+        }
+    }
+
+    private void sendClientListToOne(String clientId, String[] recipients) {
+        StringBuilder clientListString = new StringBuilder();
+        for (String client : clientList) {
+            if (!client.equals(clientId) && containsIgnoreCase(recipients, client)) {
+                clientListString.append(client).append(",");
+            }
+        }
+        if (clientListString.length() > 0) {
+            clientListString.setLength(clientListString.length() - 1); // Remove the trailing comma
+        }
+
+        connectedClients.get(clientId).println("CLIENT_LIST " + clientListString.toString());
+    }
+
+    private boolean containsIgnoreCase(String[] array, String target) {
+        for (String s : array) {
+            if (s.equalsIgnoreCase(target)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
