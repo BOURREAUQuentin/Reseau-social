@@ -2,12 +2,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -15,17 +14,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ClientFX extends Application {
 
     private Socket socket;
-    private PrintWriter ecrivain;
-    private BufferedReader lecteur;
-    private TextArea journalClient;
-    private TextField champMessage;
-    private Button boutonEnvoyer;
-    private TextField champNom;
-    private BorderPane pageConnexion;
+    private PrintWriter writer;
+    private BufferedReader reader;
+    private TextArea clientLog;
+    private TextField messageField;
+    private Button sendButton;
+    private TextField nameField;
+    private BorderPane connectionPage;
+
+    private Map<String, CheckBox> connectedClientsCheckBoxes = new HashMap<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -33,71 +38,74 @@ public class ClientFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        pageConnexion = creerPageConnexion();
-        Scene scene = new Scene(pageConnexion, 400, 300);
+        connectionPage = createConnectionPage();
+        Scene scene = new Scene(connectionPage, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Client Messagerie");
 
-        // Ajouter le gestionnaire d'événements pour la fermeture de la fenêtre
         primaryStage.setOnCloseRequest(event -> {
-            fermerConnexion();
+            closeConnection();
             Platform.exit();
         });
 
         primaryStage.show();
     }
 
-    private BorderPane creerPageConnexion() {
-        BorderPane racine = new BorderPane();
-        racine.setPadding(new Insets(10));
+    private BorderPane createConnectionPage() {
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(10));
 
-        champNom = new TextField();
-        champNom.setPromptText("Entrez votre nom...");
-        champNom.setOnKeyPressed(e -> {
+        nameField = new TextField();
+        nameField.setPromptText("Entrez votre nom...");
+        nameField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                seConnecterAuServeur();
+                connectToServer();
             }
         });
 
-        Button boutonConnexion = new Button("Connexion");
-        boutonConnexion.setOnAction(e -> seConnecterAuServeur());
+        Button connectButton = new Button("Connexion");
+        connectButton.setOnAction(e -> connectToServer());
 
-        HBox centreHBox = new HBox(10, champNom, boutonConnexion);
-        centreHBox.setPadding(new Insets(10));
-        racine.setCenter(centreHBox);
+        HBox centerHBox = new HBox(10, nameField, connectButton);
+        centerHBox.setPadding(new Insets(10));
+        root.setCenter(centerHBox);
 
-        return racine;
+        return root;
     }
 
-    private void seConnecterAuServeur() {
-        String nomClient = champNom.getText();
-        if (!nomClient.isEmpty()) {
+    private void connectToServer() {
+        String clientName = nameField.getText();
+        if (!clientName.isEmpty()) {
             try {
                 socket = new Socket("localhost", 12345);
-                ecrivain = new PrintWriter(socket.getOutputStream(), true);
-                lecteur = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                writer = new PrintWriter(socket.getOutputStream(), true);
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 // Envoyer le nom au serveur
-                ecrivain.println(nomClient);
+                writer.println(clientName);
 
                 // Créer la page principale du client
-                BorderPane racine = creerPagePrincipale();
-                Scene scene = new Scene(racine, 400, 300);
-                Stage stage = (Stage) pageConnexion.getScene().getWindow();
+                BorderPane root = createMainPage();
+                Scene scene = new Scene(root, 400, 300);
+                Stage stage = (Stage) connectionPage.getScene().getWindow();
                 stage.setScene(scene);
 
                 // Démarrer le thread pour la lecture des messages du serveur
                 new Thread(() -> {
                     try {
                         String message;
-                        while ((message = lecteur.readLine()) != null) {
-                            journalClient.appendText(message + "\n");
+                        while ((message = reader.readLine()) != null) {
+                            if (message.startsWith("CLIENT_LIST ")) {
+                                handleClientListMessage(message);
+                            } else {
+                                clientLog.appendText(message + "\n");
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        fermerConnexion();
-                        Platform.exit();  // Fermer l'application JavaFX
+                        closeConnection();
+                        Platform.exit();
                     }
                 }).start();
 
@@ -107,44 +115,83 @@ public class ClientFX extends Application {
         }
     }
 
-    private BorderPane creerPagePrincipale() {
-        BorderPane racine = new BorderPane();
-        racine.setPadding(new Insets(10));
+    private BorderPane createMainPage() {
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(10));
 
-        journalClient = new TextArea();
-        journalClient.setEditable(false);
-        journalClient.setWrapText(true);
-        racine.setCenter(journalClient);
+        clientLog = new TextArea();
+        clientLog.setEditable(false);
+        clientLog.setWrapText(true);
+        root.setCenter(clientLog);
 
-        champMessage = new TextField();
-        champMessage.setPromptText("Tapez votre message...");
-        champMessage.setOnAction(e -> envoyerMessage());
+        VBox clientsBox = new VBox(5);
+        clientsBox.setPadding(new Insets(10));
+        clientsBox.getChildren().add(new Label("Clients connectés"));
 
-        boutonEnvoyer = new Button("Envoyer");
-        boutonEnvoyer.setOnAction(e -> envoyerMessage());
+        root.setLeft(clientsBox);
 
-        HBox basHBox = new HBox(10, champMessage, boutonEnvoyer);
-        basHBox.setPadding(new Insets(10));
-        racine.setBottom(basHBox);
+        messageField = new TextField();
+        messageField.setPromptText("Tapez votre message...");
+        messageField.setOnAction(e -> sendMessage());
 
-        return racine;
+        sendButton = new Button("Envoyer");
+        sendButton.setOnAction(e -> sendMessage());
+
+        HBox bottomHBox = new HBox(10, messageField, sendButton);
+        bottomHBox.setPadding(new Insets(10));
+        root.setBottom(bottomHBox);
+
+        return root;
     }
 
-    private void envoyerMessage() {
-        String message = champMessage.getText();
+    private void sendMessage() {
+        String message = messageField.getText();
         if (!message.isEmpty()) {
-            ecrivain.println(message);
-            champMessage.clear();
+            List<String> recipients = new ArrayList<>();
+            for (Map.Entry<String, CheckBox> entry : connectedClientsCheckBoxes.entrySet()) {
+                if (entry.getValue().isSelected()) {
+                    recipients.add(entry.getKey());
+                }
+            }
+
+            if (!recipients.isEmpty()) {
+                String messageWithRecipients = "@" + String.join(",", recipients) + " " + message;
+                writer.println(messageWithRecipients);
+            } else {
+                writer.println(message);
+            }
+
+            messageField.clear();
         }
     }
 
-    private void fermerConnexion() {
+    private void closeConnection() {
         if (socket != null && !socket.isClosed()) {
             try {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void handleClientListMessage(String message) {
+        String[] parts = message.split(" ");
+        if (parts.length == 2) {
+            String[] clients = parts[1].split(",");
+            Platform.runLater(() -> {
+                VBox clientsBox = (VBox) ((BorderPane) clientLog.getParent()).getLeft();
+                clientsBox.getChildren().clear();
+                clientsBox.getChildren().add(new Label("Clients connectés"));
+
+                connectedClientsCheckBoxes.clear();
+
+                for (String client : clients) {
+                    CheckBox checkBox = new CheckBox(client);
+                    connectedClientsCheckBoxes.put(client, checkBox);
+                    clientsBox.getChildren().add(checkBox);
+                }
+            });
         }
     }
 }
