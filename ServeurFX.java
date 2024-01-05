@@ -125,18 +125,6 @@ public class ServeurFX extends Application {
                 final String finalClientId = clientId;
                 final String finalMessage = message;
 
-
-                // Client finalClient = findClientById(finalClientId);
-                // Boolean messageProvientDAbonne = false;
-                // for (Client abonnesClient : client.getListeAbonnes()){
-                //     if (abonnesClient.getNomUtilisateur().equals(finalClientId)){
-                //         messageProvientDAbonne = true;
-                //     }
-                // }
-                // if (messageProvientDAbonne){
-                //     Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
-                // }
-                // il faut parcourir la liste des abonnes du client connecté au terminal et si c'est un abonne ou lui-même qui a envoyé le message on accepte de l'afficher sinon non
                 Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
                 for (Map.Entry<String, PrintWriter> entry: connectedClients.entrySet()) {
                     List<Client> listeAbonnesClientConnecte = new ArrayList<Client>();
@@ -144,16 +132,15 @@ public class ServeurFX extends Application {
                     for (Client abonneClientConnecte : clientConnecte.getListeAbonnes()){
                         listeAbonnesClientConnecte.add(abonneClientConnecte);
                     }
+                    if (clientConnecte.equals(client)){
+                        entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
+                    }
                     for (Client abonneClientConnecte : listeAbonnesClientConnecte){
                         if (abonneClientConnecte.equals(client)){
                             entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
                         }
                     }
                 }
-
-                // for (PrintWriter destinationWriter : connectedClients.values()){
-                //     destinationWriter.println("Client " + finalClientId + ": " + finalMessage);
-                // }
 
                 if (message.startsWith("@")) {
                     String[] parts = message.split(" ", 2);
