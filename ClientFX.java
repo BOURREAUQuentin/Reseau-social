@@ -14,10 +14,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ClientFX extends Application {
 
@@ -29,8 +27,7 @@ public class ClientFX extends Application {
     private Button sendButton;
     private TextField nameField;
     private BorderPane connectionPage;
-
-    private Map<String, CheckBox> connectedClientsCheckBoxes = new HashMap<>();
+    private Set<Client> connectedClients = new HashSet<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -69,6 +66,35 @@ public class ClientFX extends Application {
         HBox centerHBox = new HBox(10, nameField, connectButton);
         centerHBox.setPadding(new Insets(10));
         root.setCenter(centerHBox);
+
+        return root;
+    }
+
+    private BorderPane createMainPage() {
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(10));
+
+        clientLog = new TextArea();
+        clientLog.setEditable(false);
+        clientLog.setWrapText(true);
+        root.setCenter(clientLog);
+
+        VBox clientsBox = new VBox(5);
+        clientsBox.setPadding(new Insets(10));
+        clientsBox.getChildren().add(new Label("Clients connectés"));
+
+        root.setLeft(clientsBox);
+
+        messageField = new TextField();
+        messageField.setPromptText("Tapez votre message...");
+        messageField.setOnAction(e -> sendMessage());
+
+        sendButton = new Button("Envoyer");
+        sendButton.setOnAction(e -> sendMessage());
+
+        HBox bottomHBox = new HBox(10, messageField, sendButton);
+        bottomHBox.setPadding(new Insets(10));
+        root.setBottom(bottomHBox);
 
         return root;
     }
@@ -115,52 +141,10 @@ public class ClientFX extends Application {
         }
     }
 
-    private BorderPane createMainPage() {
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(10));
-
-        clientLog = new TextArea();
-        clientLog.setEditable(false);
-        clientLog.setWrapText(true);
-        root.setCenter(clientLog);
-
-        VBox clientsBox = new VBox(5);
-        clientsBox.setPadding(new Insets(10));
-        clientsBox.getChildren().add(new Label("Clients connectés"));
-
-        root.setLeft(clientsBox);
-
-        messageField = new TextField();
-        messageField.setPromptText("Tapez votre message...");
-        messageField.setOnAction(e -> sendMessage());
-
-        sendButton = new Button("Envoyer");
-        sendButton.setOnAction(e -> sendMessage());
-
-        HBox bottomHBox = new HBox(10, messageField, sendButton);
-        bottomHBox.setPadding(new Insets(10));
-        root.setBottom(bottomHBox);
-
-        return root;
-    }
-
     private void sendMessage() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
-            List<String> recipients = new ArrayList<>();
-            for (Map.Entry<String, CheckBox> entry : connectedClientsCheckBoxes.entrySet()) {
-                if (entry.getValue().isSelected()) {
-                    recipients.add(entry.getKey());
-                }
-            }
-
-            if (!recipients.isEmpty()) {
-                String messageWithRecipients = "@" + String.join(",", recipients) + " " + message;
-                writer.println(messageWithRecipients);
-            } else {
-                writer.println(message);
-            }
-
+            writer.println(message);
             messageField.clear();
         }
     }
@@ -183,15 +167,53 @@ public class ClientFX extends Application {
                 VBox clientsBox = (VBox) ((BorderPane) clientLog.getParent()).getLeft();
                 clientsBox.getChildren().clear();
                 clientsBox.getChildren().add(new Label("Clients connectés"));
-
-                connectedClientsCheckBoxes.clear();
-
+    
+                connectedClients.clear();
+    
                 for (String client : clients) {
-                    CheckBox checkBox = new CheckBox(client);
-                    connectedClientsCheckBoxes.put(client, checkBox);
-                    clientsBox.getChildren().add(checkBox);
+                    if (!client.equals(nameField.getText())) { // Exclure le client actuel
+                        Label clientLabel = new Label(client);
+                        Button subscribeButton = new Button("S'abonner");
+                        subscribeButton.setOnAction(event -> toggleSubscription(client, subscribeButton));
+                        HBox clientBox = new HBox(5, clientLabel, subscribeButton);
+                        clientsBox.getChildren().add(clientBox);
+                        connectedClients.add(new Client(client));
+                    }
                 }
             });
         }
     }
+
+    private void toggleSubscription(String targetClient, Button subscribeButton) {
+        String message;
+        Client target = findClientById(targetClient);
+    
+        if (target != null) {
+            if (subscribeButton.getText().equals("S'abonner")) {
+                message = "SUBSCRIBE " + targetClient;
+                target.ajouterAbonne(findClientById(nameField.getText()));
+                subscribeButton.setText("Se désabonner");
+            } else {
+                message = "UNSUBSCRIBE " + targetClient;
+                target.supprimerAbonne(findClientById(nameField.getText()));
+                subscribeButton.setText("S'abonner");
+            }
+    
+            writer.println(message);
+        }
+    }
+
+    private Client findClientById(String clientId) {
+        for (Client client : connectedClients) {
+            if (client.getNomUtilisateur().equals(clientId)) {
+                return client;
+            }
+        }
+        return null;
+    }
+    
+    private void subscribeToClient(String targetClient) {
+        String message = "SUBSCRIBE " + targetClient;
+        writer.println(message);
+    }    
 }
