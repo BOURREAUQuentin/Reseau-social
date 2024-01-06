@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javafx.scene.control.ListView;
 
 public class ServeurFX extends Application {
     private Map<String, PrintWriter> connectedClients = new HashMap<>();
@@ -125,23 +124,6 @@ public class ServeurFX extends Application {
                 final String finalClientId = clientId;
                 final String finalMessage = message;
 
-                Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
-                for (Map.Entry<String, PrintWriter> entry: connectedClients.entrySet()) {
-                    List<Client> listeAbonnesClientConnecte = new ArrayList<Client>();
-                    Client clientConnecte = findClientById(entry.getKey());
-                    for (Client abonneClientConnecte : clientConnecte.getListeAbonnes()){
-                        listeAbonnesClientConnecte.add(abonneClientConnecte);
-                    }
-                    if (clientConnecte.equals(client)){
-                        entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
-                    }
-                    for (Client abonneClientConnecte : listeAbonnesClientConnecte){
-                        if (abonneClientConnecte.equals(client)){
-                            entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
-                        }
-                    }
-                }
-
                 if (message.startsWith("@")) {
                     String[] parts = message.split(" ", 2);
                     if (parts.length == 2) {
@@ -160,6 +142,24 @@ public class ServeurFX extends Application {
                     if (parts.length == 2) {
                         String subscribeTo = parts[1];
                         unsubscribeClient(clientId, subscribeTo);
+                    }
+                }
+                else{
+                    Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
+                    for (Map.Entry<String, PrintWriter> entry: connectedClients.entrySet()) {
+                        List<Client> listeAbonnesClientConnecte = new ArrayList<Client>();
+                        Client clientConnecte = findClientById(entry.getKey());
+                        for (Client abonneClientConnecte : clientConnecte.getListeAbonnes()){
+                            listeAbonnesClientConnecte.add(abonneClientConnecte);
+                        }
+                        if (clientConnecte.equals(client)){
+                            entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
+                        }
+                        for (Client abonneClientConnecte : listeAbonnesClientConnecte){
+                            if (abonneClientConnecte.equals(client)){
+                                entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
+                            }
+                        }
                     }
                 }
             }
@@ -229,7 +229,11 @@ public class ServeurFX extends Application {
 
         if (subscriber != null && targetClient != null) {
             subscriber.ajouterAbonne(targetClient);
-            Platform.runLater(() -> serverLog.appendText(subscriberId + " subscribed to " + subscribeTo + "\n"));
+            // Nouvelle notification pour le client s'abonnant
+            connectedClients.get(subscriberId).println("Vous venez de vous abonner à " + subscribeTo);
+            // Nouvelle notification pour le client cible
+            connectedClients.get(subscribeTo).println(subscriberId + " s'est abonné à vous!");
+            Platform.runLater(() -> serverLog.appendText(subscriberId + " s'est abonné à " + subscribeTo + "\n"));
         }
     }
 
@@ -239,7 +243,11 @@ public class ServeurFX extends Application {
 
         if (subscriber != null && targetClient != null) {
             subscriber.supprimerAbonne(targetClient);
-            Platform.runLater(() -> serverLog.appendText(subscriberId + " unsubscribed to " + subscribeTo + "\n"));
+            // Nouvelle notification pour le client s'abonnant
+            connectedClients.get(subscriberId).println("Vous venez de vous désabonner à " + subscribeTo);
+            // Nouvelle notification pour le client cible
+            connectedClients.get(subscribeTo).println(subscriberId + " s'est désabonné à vous!");
+            Platform.runLater(() -> serverLog.appendText(subscriberId + " s'est désabonné à " + subscribeTo + "\n"));
         }
     }
 
