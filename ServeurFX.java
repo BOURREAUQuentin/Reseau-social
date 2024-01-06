@@ -145,7 +145,7 @@ public class ServeurFX extends Application {
                     }
                 }
                 else{
-                    Platform.runLater(() -> serverLog.appendText("Client " + finalClientId + ": " + finalMessage + "\n"));
+                    Platform.runLater(() -> serverLog.appendText(finalClientId + ": " + finalMessage + "\n"));
                     for (Map.Entry<String, PrintWriter> entry: connectedClients.entrySet()) {
                         List<Client> listeAbonnesClientConnecte = new ArrayList<Client>();
                         Client clientConnecte = findClientById(entry.getKey());
@@ -153,11 +153,11 @@ public class ServeurFX extends Application {
                             listeAbonnesClientConnecte.add(abonneClientConnecte);
                         }
                         if (clientConnecte.equals(client)){
-                            entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
+                            entry.getValue().println(finalClientId + ": " + finalMessage);
                         }
                         for (Client abonneClientConnecte : listeAbonnesClientConnecte){
                             if (abonneClientConnecte.equals(client)){
-                                entry.getValue().println("Client " + finalClientId + ": " + finalMessage);
+                                entry.getValue().println(finalClientId + " (abonné): " + finalMessage);
                             }
                         }
                     }

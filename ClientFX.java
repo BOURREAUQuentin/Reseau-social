@@ -112,7 +112,7 @@ public class ClientFX extends Application {
 
                 // Créer la page principale du client
                 BorderPane root = createMainPage();
-                Scene scene = new Scene(root, 400, 300);
+                Scene scene = new Scene(root, 500, 400);
                 Stage stage = (Stage) connectionPage.getScene().getWindow();
                 stage.setScene(scene);
 
