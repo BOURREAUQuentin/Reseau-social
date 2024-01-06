@@ -166,7 +166,7 @@ public class ClientFX extends Application {
             Platform.runLater(() -> {
                 VBox clientsBox = (VBox) ((BorderPane) clientLog.getParent()).getLeft();
                 clientsBox.getChildren().clear();
-                clientsBox.getChildren().add(new Label("Clients connectés"));
+                clientsBox.getChildren().addAll(new Label("Connecté en tant que " + nameField.getText()), new Label("Clients connectés"));
     
                 connectedClients.clear();
     
@@ -210,10 +210,5 @@ public class ClientFX extends Application {
             }
         }
         return null;
-    }
-    
-    private void subscribeToClient(String targetClient) {
-        String message = "SUBSCRIBE " + targetClient;
-        writer.println(message);
-    }    
+    }  
 }
