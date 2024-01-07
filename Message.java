@@ -46,6 +46,10 @@ public class Message {
         return nomUtilisateur;
     }
 
+    public void likeMessage(){
+        nbLikes++;
+    }
+
     @Override
     public String toString() {
         return " '" + contenu + "' | date: " + heure + " le " + date + " | nbLikes: " + nbLikes;

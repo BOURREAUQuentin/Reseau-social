@@ -28,6 +28,7 @@ public class ClientFX extends Application {
     private TextField nameField;
     private BorderPane connectionPage;
     private Set<Client> connectedClients = new HashSet<>();
+    private Client clientConnecte;
 
     public static void main(String[] args) {
         launch(args);
@@ -103,6 +104,7 @@ public class ClientFX extends Application {
 
     private void connectToServer() {
         String clientName = nameField.getText();
+        clientConnecte = new Client(clientName);
         if (!clientName.isEmpty()) {
             try {
                 socket = new Socket("localhost", 12345);
@@ -126,13 +128,33 @@ public class ClientFX extends Application {
                             if (message.startsWith("CLIENT_LIST ")) {
                                 handleClientListMessage(message);
                             } else {
-                                System.out.println("TEST : " + message);
-                                final String finalMessage = message;  // Copie finale de la variable message
+                                final String finalMessage = message; // Copie finale de la variable message
+                                Label messageLabel = new Label(finalMessage);
+                                Button likeButton = new Button("Liker");
+                                for (Client clientConnecte : connectedClients) {
+                                    Platform.runLater(() -> {
+                                        HBox messageBox = new HBox(5);
+                                        if (!finalMessage.contains("LIKE ")) {
+                                            likeButton.setOnAction(
+                                                    event -> toggleLike(clientConnecte.getNomUtilisateur(),
+                                                            likeButton, finalMessage));
+                                            messageBox = new HBox(5, messageLabel, likeButton);
+                                        } else {
+                                            messageBox = new HBox(5, messageLabel);
+                                        }
+                                        clientLog.getChildren().add(messageBox);
+                                    });
+                                }
                                 Platform.runLater(() -> {
-                                    Label messageLabel = new Label(finalMessage);
-                                    Button likeButton = new Button("Liker");
-                                    likeButton.setOnAction(event -> toggleLike(nameField.getText(), likeButton));
-                                    HBox messageBox = new HBox(5, messageLabel, likeButton);
+                                    HBox messageBox = new HBox(5);
+                                    if (!finalMessage.contains("LIKE ")) {
+                                        likeButton.setOnAction(
+                                                event -> toggleLike(clientConnecte.getNomUtilisateur(),
+                                                        likeButton, finalMessage));
+                                        messageBox = new HBox(5, messageLabel, likeButton);
+                                    } else {
+                                        messageBox = new HBox(5, messageLabel);
+                                    }
                                     clientLog.getChildren().add(messageBox);
                                 });
                             }
@@ -157,11 +179,11 @@ public class ClientFX extends Application {
         String messageContent = messageField.getText();
         if (!messageContent.isEmpty()) {
             Message message = new Message(messageContent, nameField.getText());
+            clientConnecte.ajouterMessage(message);
             writer.println(message.toString());
             messageField.clear();
         }
     }
-    
 
     private void closeConnection() {
         if (socket != null && !socket.isClosed()) {
@@ -180,10 +202,11 @@ public class ClientFX extends Application {
             Platform.runLater(() -> {
                 VBox clientsBox = (VBox) ((BorderPane) clientLog.getParent()).getLeft();
                 clientsBox.getChildren().clear();
-                clientsBox.getChildren().addAll(new Label("Connecté en tant que " + nameField.getText()), new Label("Clients connectés"));
-    
+                clientsBox.getChildren().addAll(new Label("Connecté en tant que " + nameField.getText()),
+                        new Label("Clients connectés"));
+
                 connectedClients.clear();
-    
+
                 for (String client : clients) {
                     if (!client.equals(nameField.getText())) { // Exclure le client actuel
                         Label clientLabel = new Label(client);
@@ -201,7 +224,7 @@ public class ClientFX extends Application {
     private void toggleSubscription(String targetClient, Button subscribeButton) {
         String message;
         Client target = findClientById(targetClient);
-    
+
         if (target != null) {
             if (subscribeButton.getText().equals("S'abonner")) {
                 message = "SUBSCRIBE " + targetClient;
@@ -212,27 +235,33 @@ public class ClientFX extends Application {
                 target.supprimerAbonne(findClientById(nameField.getText()));
                 subscribeButton.setText("S'abonner");
             }
-    
+
             writer.println(message);
         }
     }
 
-    private void toggleLike(String targetClient, Button likeButton) {
-        String message;
-        Client target = findClientById(targetClient);
-    
+    private void toggleLike(String targetClient, Button likeButton, String message) {
+        String messageRetour;
+        Client target = null;
+        if (targetClient.equals(nameField.getText())) {
+            target = clientConnecte;
+        } else {
+            target = findClientById(targetClient);
+        }
+
         if (target != null) {
+            System.out.println(likeButton.getText());
             if (likeButton.getText().equals("Liker")) {
-                message = "LIKE " + targetClient;
-                //target.ajouterAbonne(findClientById(nameField.getText()));
+                messageRetour = "LIKE " + message;
+                // target.ajouterAbonne(findClientById(nameField.getText()));
                 likeButton.setText("Unliker");
             } else {
-                message = "UNLIKE " + targetClient;
-                //target.supprimerAbonne(findClientById(nameField.getText()));
+                messageRetour = "UNLIKE " + message;
+                // target.supprimerAbonne(findClientById(nameField.getText()));
                 likeButton.setText("Liker");
             }
-    
-            writer.println(message);
+
+            writer.println(messageRetour);
         }
     }
 
@@ -243,5 +272,5 @@ public class ClientFX extends Application {
             }
         }
         return null;
-    }  
+    }
 }

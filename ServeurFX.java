@@ -136,27 +136,25 @@ public class ServeurFX extends Application {
                         String subscribeTo = parts[1];
                         subscribeClient(clientId, subscribeTo);
                     }
-                }
-                else if (message.startsWith("UNSUBSCRIBE")) {
+                } else if (message.startsWith("UNSUBSCRIBE")) {
                     String[] parts = message.split(" ");
                     if (parts.length == 2) {
                         String subscribeTo = parts[1];
                         unsubscribeClient(clientId, subscribeTo);
                     }
-                }
-                else{
+                } else {
                     Platform.runLater(() -> serverLog.appendText(finalClientId + ": " + finalMessage + "\n"));
-                    for (Map.Entry<String, PrintWriter> entry: connectedClients.entrySet()) {
+                    for (Map.Entry<String, PrintWriter> entry : connectedClients.entrySet()) {
                         List<Client> listeAbonnesClientConnecte = new ArrayList<Client>();
                         Client clientConnecte = findClientById(entry.getKey());
-                        for (Client abonneClientConnecte : clientConnecte.getListeAbonnes()){
+                        for (Client abonneClientConnecte : clientConnecte.getListeAbonnes()) {
                             listeAbonnesClientConnecte.add(abonneClientConnecte);
                         }
-                        if (clientConnecte.equals(client)){
+                        if (clientConnecte.equals(client)) {
                             entry.getValue().println(finalClientId + ": " + finalMessage);
                         }
-                        for (Client abonneClientConnecte : listeAbonnesClientConnecte){
-                            if (abonneClientConnecte.equals(client)){
+                        for (Client abonneClientConnecte : listeAbonnesClientConnecte) {
+                            if (abonneClientConnecte.equals(client)) {
                                 entry.getValue().println(finalClientId + " (abonné): " + finalMessage);
                             }
                         }
@@ -212,7 +210,8 @@ public class ServeurFX extends Application {
     private void sendClientListToOne(String clientId, String[] recipients) {
         StringBuilder clientListString = new StringBuilder();
         for (Client client : clientList) {
-            if (!client.getNomUtilisateur().equals(clientId) && containsIgnoreCase(recipients, client.getNomUtilisateur())) {
+            if (!client.getNomUtilisateur().equals(clientId)
+                    && containsIgnoreCase(recipients, client.getNomUtilisateur())) {
                 clientListString.append(client.getNomUtilisateur()).append(",");
             }
         }
