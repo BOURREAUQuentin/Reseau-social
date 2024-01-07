@@ -7,8 +7,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -24,7 +22,7 @@ public class ClientFX extends Application {
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
-    private TextArea clientLog;
+    private VBox clientLog;
     private TextField messageField;
     private Button sendButton;
     private TextField nameField;
@@ -76,9 +74,11 @@ public class ClientFX extends Application {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
 
-        clientLog = new TextArea();
-        clientLog.setEditable(false);
-        clientLog.setWrapText(true);
+        // clientLog = new TextArea();
+        // clientLog.setEditable(false);
+        // clientLog.setWrapText(true);
+        // root.setCenter(clientLog);
+        clientLog = new VBox(2);
         root.setCenter(clientLog);
 
         VBox clientsBox = new VBox(5);
@@ -126,14 +126,24 @@ public class ClientFX extends Application {
                             if (message.startsWith("CLIENT_LIST ")) {
                                 handleClientListMessage(message);
                             } else {
-                                clientLog.appendText(message + "\n");
+                                System.out.println("TEST : " + message);
+                                final String finalMessage = message;  // Copie finale de la variable message
+                                Platform.runLater(() -> {
+                                    Label messageLabel = new Label(finalMessage);
+                                    Button likeButton = new Button("Liker");
+                                    likeButton.setOnAction(event -> toggleLike(nameField.getText(), likeButton));
+                                    HBox messageBox = new HBox(5, messageLabel, likeButton);
+                                    clientLog.getChildren().add(messageBox);
+                                });
                             }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        closeConnection();
-                        Platform.exit();
+                        Platform.runLater(() -> {
+                            closeConnection();
+                            Platform.exit();
+                        });
                     }
                 }).start();
 
@@ -201,6 +211,25 @@ public class ClientFX extends Application {
                 message = "UNSUBSCRIBE " + targetClient;
                 target.supprimerAbonne(findClientById(nameField.getText()));
                 subscribeButton.setText("S'abonner");
+            }
+    
+            writer.println(message);
+        }
+    }
+
+    private void toggleLike(String targetClient, Button likeButton) {
+        String message;
+        Client target = findClientById(targetClient);
+    
+        if (target != null) {
+            if (likeButton.getText().equals("Liker")) {
+                message = "LIKE " + targetClient;
+                //target.ajouterAbonne(findClientById(nameField.getText()));
+                likeButton.setText("Unliker");
+            } else {
+                message = "UNLIKE " + targetClient;
+                //target.supprimerAbonne(findClientById(nameField.getText()));
+                likeButton.setText("Liker");
             }
     
             writer.println(message);
