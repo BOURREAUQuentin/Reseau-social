@@ -43,7 +43,7 @@ public class ServeurFX extends Application {
         root.setCenter(new ScrollPane(serverLog));
         root.setRight(createClientsListView());
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 850, 500);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Serveur de Messagerie");
 

@@ -7,6 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -112,7 +114,7 @@ public class ClientFX extends Application {
 
                 // Créer la page principale du client
                 BorderPane root = createMainPage();
-                Scene scene = new Scene(root, 500, 400);
+                Scene scene = new Scene(root, 800, 500);
                 Stage stage = (Stage) connectionPage.getScene().getWindow();
                 stage.setScene(scene);
 
@@ -142,12 +144,14 @@ public class ClientFX extends Application {
     }
 
     private void sendMessage() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            writer.println(message);
+        String messageContent = messageField.getText();
+        if (!messageContent.isEmpty()) {
+            Message message = new Message(messageContent, nameField.getText());
+            writer.println(message.toString());
             messageField.clear();
         }
     }
+    
 
     private void closeConnection() {
         if (socket != null && !socket.isClosed()) {
