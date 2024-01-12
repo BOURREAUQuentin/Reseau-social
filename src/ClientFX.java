@@ -17,11 +17,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import javax.imageio.plugins.tiff.TIFFDirectory;
+import javax.swing.JTextArea;
+
 public class ClientFX extends Application {
 
     private TextArea chatArea;
     private TextField messageField;
     private ClientModele clientModele;
+    private TextArea finalServerLog;
 
     public static void main(String[] args) {
         launch(args);
@@ -29,7 +33,11 @@ public class ClientFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.clientModele = new ClientModele();
+        this.clientModele = new ClientModele(this);
+        this.chatArea = new TextArea();
+        this.finalServerLog = new TextArea();
+        this.messageField = new TextField();
+
 
         // Mise en place de l'interface graphique
         BorderPane root = new BorderPane();
@@ -47,7 +55,7 @@ public class ClientFX extends Application {
         messageField.setPromptText("Tapez votre message ici...");
 
         Button sendButton = new Button("Envoyer");
-        sendButton.setOnAction(new ControleurEnvoyerMessage(this));
+        sendButton.setOnAction(new ControleurEnvoyerMessage(this.clientModele, this));
 
         VBox inputBox = new VBox(5, messageField, sendButton);
 
@@ -55,7 +63,7 @@ public class ClientFX extends Application {
         root.setBottom(inputBox);
 
         // Ajout du gestionnaire d'événements pour la touche "Entrée"
-        this.messageField.setOnAction(new ControleurEnvoyerMessage(this.clientModele));
+        this.messageField.setOnAction(new ControleurEnvoyerMessage(this.clientModele, this));
 
         Scene scene = new Scene(root, 400, 300);
         primaryStage.setTitle("Client Messagerie");
@@ -64,10 +72,22 @@ public class ClientFX extends Application {
         primaryStage.show();
 
         // Lire les messages du serveur en arrière-plan
-        new Thread(this.clientModele.readMessages()).start();
+        this.clientModele.readMessages();
     }
 
     public void clearFielMessage(){
         this.messageField.clear();
+    }
+
+    public String getMessageField(){
+        return this.messageField.getText();
+    }
+
+    public void runLater(String s){
+        Platform.runLater(() -> finalServerLog.appendText(s));
+    }
+
+    public void exit(){
+        Platform.exit();
     }
 }

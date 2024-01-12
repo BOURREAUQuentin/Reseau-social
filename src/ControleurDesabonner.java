@@ -1,26 +1,32 @@
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
+
+import java.net.Socket;
 import java.util.Optional;
 import javafx.scene.control.Button;
 
 /**
  * Contrôleur à activer lorsque l'on clique sur le bouton envoyer un message.
  */
-public class ControleurSAbonner implements EventHandler<ActionEvent> {
+public class ControleurDesabonner implements EventHandler<ActionEvent> {
     /**
      * vue du reseau social
      **/
-    private Client client;
+    private ClientModele clientModele;
+    private ServeurModele serveurModele;
+    private ClientFX clientFX;
+    private Socket clientSocket;
 
     /**
       * @param modelePendu modèle du reseau social
     * @param p vue du reseau social
     */
-    public void ControleurSeDesabonner(Client client, Serveur serveur, ClientFX vueReseau){
-         this.client = client;
-         this.serveur = serveur;
-         this.vueReseau = vueReseau;
+    public void ControleurDesabonner(ClientModele client, ServeurModele serveur, ClientFX clientFX, Socket clientSocket){
+         this.clientModele = client;
+         this.serveurModele = serveur;
+         this.clientFX = clientFX;
+         this.clientSocket = clientSocket;
     }
 
     /**
@@ -30,8 +36,8 @@ public class ControleurSAbonner implements EventHandler<ActionEvent> {
     public void handle(ActionEvent actionEvent) {
         Button bEnvoyerMessage = (Button) actionEvent.getSource();
         if (bEnvoyerMessage.getText().equals("Se désabonner")){
-            this.client.toggleAbonne();
-            this.serveur.handleClient();
+            //this.clientModele.unsubscribeClient()
+            this.serveurModele.handleClient(this.clientSocket);
             // rafraichir la vue du client
         }
         else{

@@ -12,13 +12,15 @@ public class ControleurEnvoyerMessage implements EventHandler<ActionEvent> {
      * vue du reseau social
      **/
     private ClientModele clientModele;
+    private ClientFX vueClient;
 
     /**
       * @param modelePendu modèle du reseau social
     * @param p vue du reseau social
     */
-    public ControleurEnvoyerMessage(ClientModele client) {
+    public ControleurEnvoyerMessage(ClientModele clientModele, ClientFX vueClient) {
          this.clientModele = clientModele;
+         this.vueClient = vueClient;
     }
 
     /**

@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -16,8 +18,9 @@ public class ServeurFX extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         this.serveurModele = new ServeurModele(this);
+        this.finalServerLog = new TextArea();
 
         // Mise en place de l'interface graphique du serveur
         BorderPane root = new BorderPane();
@@ -32,10 +35,16 @@ public class ServeurFX extends Application {
         Scene scene = new Scene(root);
         primaryStage.setTitle("Serveur Messagerie");
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(this.serveurModele.closeServer());
+        primaryStage.setOnCloseRequest(event -> {this.serveurModele.closeServer();});
         primaryStage.show();
 
         // Démarrer le serveur en arrière-plan
-        new Thread(this.serveurModele.startServer()).start();
+        //new Thread(this.serveurModele.startServer()).start();
+        Platform.runLater(() -> finalServerLog.appendText("Le serveur est à l'écoute sur le port 12345\n"));
+
+    }
+
+    public void runLater(String s){
+        Platform.runLater(() -> finalServerLog.appendText(s));
     }
 }
