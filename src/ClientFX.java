@@ -19,10 +19,9 @@ import java.net.Socket;
 
 public class ClientFX extends Application {
 
-    private PrintWriter writer;
-    private BufferedReader reader;
     private TextArea chatArea;
     private TextField messageField;
+    private ClientModele clientModele;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,8 +29,7 @@ public class ClientFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Connexion au serveur
-        connectToServer();
+        this.clientModele = new ClientModele();
 
         // Mise en place de l'interface graphique
         BorderPane root = new BorderPane();
@@ -49,7 +47,7 @@ public class ClientFX extends Application {
         messageField.setPromptText("Tapez votre message ici...");
 
         Button sendButton = new Button("Envoyer");
-        sendButton.setOnAction(e -> sendMessage());
+        sendButton.setOnAction(new ControleurEnvoyerMessage(this));
 
         VBox inputBox = new VBox(5, messageField, sendButton);
 
@@ -57,64 +55,19 @@ public class ClientFX extends Application {
         root.setBottom(inputBox);
 
         // Ajout du gestionnaire d'événements pour la touche "Entrée"
-        messageField.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                sendMessage();
-            }
-        });
+        this.messageField.setOnAction(new ControleurEnvoyerMessage(this.clientModele));
 
         Scene scene = new Scene(root, 400, 300);
         primaryStage.setTitle("Client Messagerie");
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(e -> closeConnection());
+        primaryStage.setOnCloseRequest(e -> this.clientModele.closeConnection());
         primaryStage.show();
 
         // Lire les messages du serveur en arrière-plan
-        new Thread(this::readMessages).start();
+        new Thread(this.clientModele.readMessages()).start();
     }
 
-    private void connectToServer() {
-        try {
-            Socket socket = new Socket("localhost", 12345);
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            appendToChatArea("Connecté au serveur !");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Platform.exit();
-        }
-    }
-
-    private void sendMessage() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            writer.println(message);
-            appendToChatArea("Moi: " + message);
-            messageField.clear();
-        }
-    }
-
-    private void readMessages() {
-        try {
-            String message;
-            while ((message = reader.readLine()) != null) {
-                appendToChatArea("Serveur: " + message);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void appendToChatArea(String message) {
-        Platform.runLater(() -> chatArea.appendText(message + "\n"));
-    }
-
-    private void closeConnection() {
-        try {
-            writer.close();
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void clearFielMessage(){
+        this.messageField.clear();
     }
 }
