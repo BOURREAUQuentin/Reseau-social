@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import bd.UtilisateurSQL;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -8,7 +7,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import src.Client;
 
 public class ControleurBoutonConnexion implements EventHandler<ActionEvent>{
     private PageInscription appliInscription;

@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,17 +9,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.spi.ResolveResult;
-
-import java.Utilisateur;
-import java.Message;
-
 public class AbonneSQL{
 
     /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
+    private Connection connexion;
     
-    public AbonneSQL(){
+    public AbonneSQL(Connexion connexionBD){
+        try{
+            this.connexion = connexionBD.getConnection();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur){

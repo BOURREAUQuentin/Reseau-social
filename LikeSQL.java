@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,9 +5,18 @@ import java.sql.SQLException;
 
 public class LikeSQL {
     /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
+    private Connection connexion;
 
-    public LikeSQL(){
+    public LikeSQL(Connexion connexionBD){
+        try{
+            this.connexion = connexionBD.getConnection();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     private int getIdUtilisateur(String pseudoClient){

@@ -1,5 +1,3 @@
-package java;
-
 public class Like{
     private int idMessage;
     private int idUtilisateur;

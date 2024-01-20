@@ -1,5 +1,3 @@
-package src;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,8 +5,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
-import modele.java.Message;
 
 public class Client {
     private static final int PORT = 5556;
@@ -56,11 +52,11 @@ public class Client {
                 String serveurMessage;
                 while ((serveurMessage = this.lecteurClient.readLine()) != null) {
                     if (serveurMessage.contains(this.pseudoClient)){
-                        PagePrincipale.afficheMessage(serveurMessage);
+                        PageAccueil.afficheMessage(serveurMessage);
                     }
                     for (String clientAbonne : ClientsAbonnements){
                         if (serveurMessage.contains(clientAbonne)){
-                            PagePrincipale.afficheMessage(serveurMessage);
+                            PageAccueil.afficheMessage(serveurMessage);
                         }
                     }
                 }

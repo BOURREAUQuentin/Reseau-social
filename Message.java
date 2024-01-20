@@ -1,5 +1,3 @@
-package java;
-
 public class Message {
     private int idMessage;
     private String contenu;

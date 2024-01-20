@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,13 +7,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.Message;
 
 public class MessageSQL {
     /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
+    private Connection connexion;
 
-    public MessageSQL(){
+    public MessageSQL(Connexion connexionBD){
+        try{
+            this.connexion = connexionBD.getConnection();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public int prochainIdMessage(){

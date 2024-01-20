@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,19 +8,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.spi.ResolveResult;
-
-import java.Utilisateur;
-import src.Client;
-
-import java.Utilisateur;
-import java.Message;
-
-public class ClientSQL {
+public class UtilisateurSQL {
     /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
+    private Connection connexion;
 
-    public ClientSQL(){
+    public UtilisateurSQL(Connexion connexionBD){
+        try{
+            this.connexion = connexionBD.getConnection();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     public int prochainIdUtilisateur(){
@@ -41,7 +40,7 @@ public class ClientSQL {
         return 0;
     }
 
-    public List<Utilisateur> getLesUtilisateur(){
+    public List<Utilisateur> getLesUtilisateurs(){
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
             PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR");
@@ -58,7 +57,7 @@ public class ClientSQL {
         }
     }
 
-    public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse){
+    public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
             ps.setString(1, nomUtilisateur);
@@ -93,7 +92,7 @@ public class ClientSQL {
         }
     }
 
-    public boolean ajouterClient(String nomUtilisateur, String motDePasse){
+    public boolean ajouterUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             if (utilisateurExiste(nomUtilisateur)){
                 return false;

@@ -1,5 +1,3 @@
-package src;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,8 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import modele.java.Client;
-import modele.java.Message;
 
 public class ClientHandler extends Thread {
     private String nomUtilisateurClient;
@@ -43,7 +39,8 @@ public class ClientHandler extends Thread {
             this.ecriteurClient = new PrintWriter(this.socketClient.getOutputStream());
             String message;
             while ((message = this.lecteurClient.readLine()) != null) {
-                this.broadcast(message);
+                //this.broadcast(message);
+                System.out.println(message);
             }
         } 
         

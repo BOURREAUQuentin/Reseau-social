@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -52,7 +51,7 @@ public class PageConnexion {
         boutonConnexion.setOnMouseEntered(e -> boutonConnexion.setStyle("-fx-background-color: #252527; -fx-background-radius: 10")); // style lors du survol
         boutonConnexion.setOnMouseExited(e -> boutonConnexion.setStyle("-fx-background-color: #424244; -fx-background-radius: 10")); // réinitialisation du style
         boutonConnexion.setTextFill(Color.WHITE);
-        boutonConnexion.setFont(Font.font("Arial", 25));
+        boutonConnexion.setFont(Font.font("Arial", 15));
         Button boutonInscription = new Button("Pas encore de compte ?");
         boutonInscription.setOnAction(new ControleurRetourInscription(this));
         boutonInscription.setPrefWidth(500);
@@ -60,7 +59,7 @@ public class PageConnexion {
         boutonInscription.setOnMouseEntered(e -> boutonInscription.setStyle("-fx-background-color: #252527; -fx-background-radius: 10")); // style lors du survol
         boutonInscription.setOnMouseExited(e -> boutonInscription.setStyle("-fx-background-color: #424244; -fx-background-radius: 10")); // réinitialisation du style
         boutonInscription.setTextFill(Color.WHITE);
-        boutonInscription.setFont(Font.font("Arial", 25));
+        boutonInscription.setFont(Font.font("Arial", 15));
 
         // ajout des elements au gridpane
         gridPaneConnexion.add(labelNomUtilisateur, 0, 0);
@@ -76,7 +75,7 @@ public class PageConnexion {
     public void showPageConnexion() {
         stage.setTitle("Connexion");
         GridPane gridPaneConnexion = this.getPanelConnexion();
-        Scene scene = new Scene(gridPaneConnexion, 450, 450);
+        Scene scene = new Scene(gridPaneConnexion, 800, 800);
         stage.setScene(scene);
         stage.show();
     }
