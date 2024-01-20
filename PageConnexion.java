@@ -39,11 +39,11 @@ public class PageConnexion {
         Label labelNomUtilisateur = new Label("Nom d'utilisateur : ");
         TextField textFieldNomUtilisateur = new TextField();
         textFieldNomUtilisateur.setPromptText("chhumyLeGoat");
-        this.lesElementsGraphiques.put("textFieldNomUtilisateur", textFieldNomUtilisateur);
+        this.lesElementsGraphiques.put("tfNomUtilisateur", textFieldNomUtilisateur);
         Label labelPassword = new Label("Mot de passe : ");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("*********");
-        this.lesElementsGraphiques.put("passwordField", passwordField);
+        this.lesElementsGraphiques.put("passwdf", passwordField);
         Button boutonConnexion = new Button("Se connecter");
         boutonConnexion.setOnAction(new ControleurBoutonConnexion(this));
         boutonConnexion.setPrefWidth(500);

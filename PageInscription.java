@@ -39,11 +39,11 @@ public class PageInscription {
         Label labelNomUtilisateur = new Label("Nom d'utilisateur : ");
         TextField textFieldNomUtilisateur = new TextField();
         textFieldNomUtilisateur.setPromptText("chhumyLeGoat");
-        this.lesElementsGraphiques.put("textFieldNomUtilisateur", textFieldNomUtilisateur);
+        this.lesElementsGraphiques.put("tfNomUtilisateur", textFieldNomUtilisateur);
         Label labelPassword = new Label("Mot de passe : ");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("*********");
-        this.lesElementsGraphiques.put("passwordField", passwordField);
+        this.lesElementsGraphiques.put("passwdf", passwordField);
         Button boutonInscription = new Button("S'inscrire");
         boutonInscription.setOnAction(new ControleurBoutonInscription(this));
         boutonInscription.setPrefWidth(500);
