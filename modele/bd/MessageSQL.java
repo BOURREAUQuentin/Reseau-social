@@ -18,7 +18,7 @@ public class MessageSQL {
     public MessageSQL(){
     }
 
-    private int prochainIdMessage(){
+    public int prochainIdMessage(){
         try{
             PreparedStatement ps = connexion.prepareStatement("SELECT max(idM) maxId FROM MESSAGE");
             ResultSet rs = ps.executeQuery();
@@ -67,8 +67,7 @@ public class MessageSQL {
             ps.setInt(1, idMessage);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Message m = new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
-                return m;
+                return new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
             }
         }
         catch(SQLException e){
@@ -103,8 +102,7 @@ public class MessageSQL {
             ps.setString(3, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Message m = new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
-                return m;
+                return new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
             }
         }
         catch(SQLException e){
@@ -117,13 +115,8 @@ public class MessageSQL {
     public List<Message> recupererMessagesClientOrdonne(String nomUtilisateur) {
         // récupère les messages du client mais aussi les messages de ses abonnements
         List<Message> recupererMessagesClientOrdonne = new ArrayList<>();
-        try {
-            recupererMessagesClientOrdonne.addAll(recupererMessagesUtilisateur(nomUtilisateur));
-            recupererMessagesClientOrdonne.addAll(recupererMessagesAbonnements(nomUtilisateur));
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+        recupererMessagesClientOrdonne.addAll(recupererMessagesUtilisateur(nomUtilisateur));
+        recupererMessagesClientOrdonne.addAll(recupererMessagesAbonnements(nomUtilisateur));
         Collections.sort(recupererMessagesClientOrdonne, new MessageDateComparator());
         return recupererMessagesClientOrdonne;
     }
