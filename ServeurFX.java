@@ -24,6 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.html.ListView;
+
+/**
+ * La classe ServeurFX représente le serveur de messagerie de l'application.
+ * Elle gère la communication avec les clients, l'affichage des clients connectés,
+ * et l'envoi des messages entre les clients.
+ */
 public class ServeurFX extends Application {
     private Map<String, PrintWriter> connectedClients = new HashMap<>();
     private ObservableList<Client> clientList = FXCollections.observableArrayList();
@@ -31,10 +38,18 @@ public class ServeurFX extends Application {
     private ListView<Client> clientsListView = new ListView<>(clientList);
     private List<Client> allClients = new ArrayList<>();
 
+    /**
+     * Méthode principale de l'application serveur.
+     * @param args Les arguments de la ligne de commande.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Méthode appelée au démarrage de l'application serveur.
+     * @param primaryStage La fenêtre principale de l'application.
+     */
     @Override
     public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
@@ -54,6 +69,10 @@ public class ServeurFX extends Application {
         new Thread(this::startServer).start();
     }
 
+    /**
+     * Crée la vue des clients connectés.
+     * @return Un élément Node représentant la vue des clients connectés.
+     */
     private Node createClientsListView() {
         VBox clientsBox = new VBox(5);
         clientsBox.setPadding(new Insets(10));
@@ -80,6 +99,10 @@ public class ServeurFX extends Application {
         return clientsBox;
     }
 
+    /**
+     * S'abonne au client sélectionné dans la liste des clients connectés.
+     * Affiche une alerte si aucun client n'est sélectionné.
+     */
     private void subscribeToClient(Client targetClient) {
         Client subscriber = selectedClient();
         if (subscriber != null) {
@@ -88,10 +111,17 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Retourne le client sélectionné dans la liste des clients connectés.
+     * @return Le client sélectionné.
+     */
     private Client selectedClient() {
         return clientsListView.getSelectionModel().getSelectedItem();
     }
 
+    /**
+     * Démarre le serveur en écoutant sur le port 12345.
+     */
     private void startServer() {
         try {
             ServerSocket serverSocket = new ServerSocket(12345);
@@ -106,6 +136,10 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Gère la communication avec un client.
+     * @param clientSocket Le socket du client.
+     */
     private void handleClient(Socket clientSocket) {
         try {
             BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -180,12 +214,18 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Ferme le serveur proprement.
+     */
     private void closeServer() {
         Platform.runLater(() -> {
             System.exit(0);
         });
     }
 
+    /**
+     * Met à jour la liste des clients connectés dans la vue.
+     */
     private void updateClientListView() {
         Platform.runLater(() -> {
             clientList.setAll(allClients);
@@ -193,6 +233,9 @@ public class ServeurFX extends Application {
         });
     }
 
+    /**
+     * Envoie la liste des clients connectés à tous les clients.
+     */
     private void sendClientListToAll() {
         StringBuilder clientListString = new StringBuilder();
         for (Client client : clientList) {
@@ -207,6 +250,11 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Envoie la liste des clients connectés à un client spécifique.
+     * @param clientId L'identifiant du client destinataire.
+     * @param recipients La liste des destinataires de la liste des clients.
+     */
     private void sendClientListToOne(String clientId, String[] recipients) {
         StringBuilder clientListString = new StringBuilder();
         for (Client client : clientList) {
@@ -222,6 +270,11 @@ public class ServeurFX extends Application {
         connectedClients.get(clientId).println("CLIENT_LIST " + clientListString.toString());
     }
 
+    /**
+     * S'abonne un client à un autre client.
+     * @param subscriberId L'identifiant du client s'abonnant.
+     * @param subscribeTo L'identifiant du client cible.
+     */
     private void subscribeClient(String subscriberId, String subscribeTo) {
         Client subscriber = findClientById(subscriberId);
         Client targetClient = findClientById(subscribeTo);
@@ -236,6 +289,11 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Désabonne un client d'un autre client.
+     * @param subscriberId L'identifiant du client désabonnant.
+     * @param subscribeTo L'identifiant du client cible.
+     */
     private void unsubscribeClient(String subscriberId, String subscribeTo) {
         Client subscriber = findClientById(subscriberId);
         Client targetClient = findClientById(subscribeTo);
@@ -250,6 +308,12 @@ public class ServeurFX extends Application {
         }
     }
 
+    /**
+     * Vérifie si un tableau de chaînes contient une chaîne spécifique (insensible à la casse).
+     * @param array Le tableau de chaînes à vérifier.
+     * @param target La chaîne à rechercher.
+     * @return true si le tableau contient la chaîne, sinon false.
+     */
     private boolean containsIgnoreCase(String[] array, String target) {
         for (String s : array) {
             if (s.equalsIgnoreCase(target)) {
@@ -259,6 +323,11 @@ public class ServeurFX extends Application {
         return false;
     }
 
+    /**
+     * Recherche un client par son identifiant.
+     * @param clientId L'identifiant du client à rechercher.
+     * @return Le client trouvé, ou null s'il n'existe pas.
+     */
     private Client findClientById(String clientId) {
         for (Client client : allClients) {
             if (client.getNomUtilisateur().equals(clientId)) {
