@@ -2,18 +2,18 @@ package java;
 
 public class Like{
     private int idMessage;
-    private int idClient;
+    private int idUtilisateur;
 
-    public Like(int idMessage, int idClient){
+    public Like(int idMessage, int idUtilisateur){
         this.idMessage = idMessage;
-        this.idClient = idClient;
+        this.idUtilisateur = idUtilisateur;
     }
 
     public int getIdMessage(){
         return this.idMessage;
     }
 
-    public int idClient(){
-        return this.idClient;
+    public int getIdUtilisateur(){
+        return this.idUtilisateur;
     }
 }
