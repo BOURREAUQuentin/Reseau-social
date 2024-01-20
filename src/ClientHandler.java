@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import modele.java.Client;
 import modele.java.Message;
@@ -15,6 +17,9 @@ public class ClientHandler extends Thread {
     private BufferedReader lecteurClient;
     private PrintWriter ecriteurClient;
     private Map<String, PrintWriter> lesClientsConnectes;
+    private static List<String> ClientsAbonnements = new ArrayList<>(); // clients auxquels l'utilisateur est abonné
+    private static List<String> ClientsAbonnes = new ArrayList<>(); // clients abonnés à cet utilisateur
+    private static List<String> ClientsNonAbonnes = new ArrayList<>(); // clients auxquels l'utilisateur n'est pas encore abonné
 
     public ClientHandler(Socket socketClient, Map<String, PrintWriter> lesClientsConnectes){
         this.socketClient = socketClient;
