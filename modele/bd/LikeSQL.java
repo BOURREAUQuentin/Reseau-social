@@ -3,11 +3,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * La classe LikeSQL gère les opérations liées aux likes dans une base de données.
+ */
 public class LikeSQL {
 
     public LikeSQL(){
     }
 
+    /**
+     * Récupère l'identifiant d'un utilisateur à partir de son nom d'utilisateur.
+     *
+     * @param pseudoClient Le nom d'utilisateur de l'utilisateur.
+     * @return L'identifiant de l'utilisateur, ou 0 si l'utilisateur n'est pas trouvé.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     private static int getIdUtilisateur(String pseudoClient) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
@@ -24,6 +34,13 @@ public class LikeSQL {
         }
     }
 
+    /**
+     * Ajoute un like à un message donné par un utilisateur donné.
+     *
+     * @param idMessage L'identifiant du message.
+     * @param nomUtilisateurClient Le nom d'utilisateur du client qui ajoute le like.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static void ajouterLike(int idMessage, String nomUtilisateurClient) throws ClassNotFoundException{
         try{
             int idClient = getIdUtilisateur(nomUtilisateurClient);
@@ -37,6 +54,13 @@ public class LikeSQL {
         }
     }
 
+    /**
+     * Supprime le like d'un message donné par un utilisateur donné.
+     *
+     * @param idMessage L'identifiant du message.
+     * @param nomUtilisateurClient Le nom d'utilisateur du client qui supprime le like.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static void supprimerLike(int idMessage, String nomUtilisateurClient) throws ClassNotFoundException{
         try{
             int idClient = getIdUtilisateur(nomUtilisateurClient);
@@ -50,6 +74,13 @@ public class LikeSQL {
         }
     }
 
+    /**
+     * Récupère le nombre total de likes pour un message donné.
+     *
+     * @param idMessage L'identifiant du message.
+     * @return Le nombre total de likes pour le message.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static int nbLikesMessage(int idMessage) throws ClassNotFoundException{
         int nbLikes = 0;
         try{
@@ -67,6 +98,14 @@ public class LikeSQL {
         }
     }
 
+    /**
+     * Récupère le nombre de likes d'un utilisateur spécifique pour un message donné.
+     *
+     * @param idMessage L'identifiant du message.
+     * @param idUtilisateur L'identifiant de l'utilisateur.
+     * @return Le nombre de likes de l'utilisateur pour le message.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static int nbLikesMessageParUtilisateur(int idMessage, int idUtilisateur) throws ClassNotFoundException{
         int cpt=0;
         try{
