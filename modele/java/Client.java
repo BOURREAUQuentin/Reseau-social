@@ -1,4 +1,4 @@
-package modele.java;
+package java;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 public class Client {
     private int id;
     private String nomUtilisateur;
-    private List<Client> listeAbonnes;
 
     public Client(int id, String nomUtilisateur) {
         this.id = id;
@@ -20,14 +19,6 @@ public class Client {
 
     public List<Client> getListeAbonnes() {
         return listeAbonnes;
-    }
-
-    public void ajouterAbonne(Client abonne) {
-        listeAbonnes.add(abonne);
-    }
-
-    public void supprimerAbonne(Client abonne) {
-        listeAbonnes.remove(abonne);
     }
 
     @Override

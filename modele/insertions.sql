@@ -12,9 +12,9 @@ INSERT INTO 'ABONNE' (abonnementA, abonneA) values
 (2, 3); -- loann est abonné (abonnement) à leni
 
 -- insertions dans la table MESSAGE
-INSERT INTO 'MESSAGE' (idM, contenuM, idC) values
-(1, "ceci est un test", 1), -- message de quentin
-(2, "il fait beau aujourd'hui", 2); -- message de loann
+INSERT INTO 'MESSAGE' (idM, contenuM, dateM, idC) values
+(1, "ceci est un test", '2023-12-24 10:48:00', 1), -- message de quentin
+(2, "il fait beau aujourd'hui", '2024-12-26 07:24:00', 2); -- message de loann
 
 -- insertions dans la table LIKE
 INSERT INTO 'LIKE' (idM, idC) values

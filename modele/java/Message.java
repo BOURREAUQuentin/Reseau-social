@@ -1,52 +1,37 @@
 package java;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 public class Message {
-    private int id;
+    private int idMessage;
     private String contenu;
-    private LocalDate date;
-    private LocalTime heure;
-    private int nbLikes;
+    private String date;
     private int idUtilisateur;
+    private String nomUtilisateur;
 
-    public Message(int id, String contenu, int idUtilisateur) {
-        this.id = id;
+    public Message(int idMessage, String contenu, String date, int idUtilisateur, String nomUtilisateur) {
+        this.idMessage = idMessage;
         this.contenu = contenu;
-        LocalDateTime now = LocalDateTime.now();
-        this.date = now.toLocalDate();
-        this.heure = now.toLocalTime();
-        this.nbLikes = 0;
+        this.date = date;
         this.idUtilisateur = idUtilisateur;
+        this.nomUtilisateur = nomUtilisateur;
     }
 
-    public int getId() {
-        return id;
+    public int getidMessage() {
+        return idMessage;
     }
 
     public String getContenu() {
         return contenu;
     }
 
-    public LocalDate getDate() {
+    public String getDate(){
         return date;
-    }
-
-    public LocalTime getHeure() {
-        return heure;
-    }
-
-    public int getNbLikes() {
-        return nbLikes;
     }
 
     public int getIdUtilisateur() {
         return idUtilisateur;
     }
 
-    public void likeMessage(){
-        nbLikes++;
+    public String getNomUtilisateur(){
+        return nomUtilisateur;
     }
 }

@@ -1,9 +1,8 @@
 -- fichier de création de la base de données du projet
 CREATE TABLE IF NOT EXISTS 'CLIENT' (
     idC INT NOT NULL,
-    nomUtilisateurC VARCHAR(100),
-    emailC VARCHAR(100) UNIQUE,
-    mdpC VARCHAR(100) UNIQUE,
+    nomUtilisateurC VARCHAR(100) UNIQUE NOT NULL,
+    mdpC VARCHAR(100) UNIQUE NOT NULL,
     PRIMARY KEY (idC)
 );
 
@@ -19,7 +18,7 @@ CREATE TABLE IF NOT EXISTS 'MESSAGE' (
     idM INT NOT NULL,
     contenuM VARCHAR(150) NOT NULL,
     idC INT NOT NULL,
-    date DATETIME,
+    dateM DATETIME NOT NULL,
     FOREIGN KEY (idX) REFERENCES CLIENT(idC),
     PRIMARY KEY (idM)
 );
