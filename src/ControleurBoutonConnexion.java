@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import bd.UtilisateurSQL;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -8,7 +7,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import src.Client;
 
 public class ControleurBoutonConnexion implements EventHandler<ActionEvent>{
     private PageInscription appliInscription;
@@ -49,7 +47,7 @@ public class ControleurBoutonConnexion implements EventHandler<ActionEvent>{
                 MainClient.getInstance().setUtilisateurConnecte(utilisateurConnecte);
                 PageAccueil pageAccueil = null;
                 if (this.appliInscription == null){
-                    pageAccueil = new PageAccueil(this.appliConnexion.getStage(), client);
+                    pageAccueil = new ClientFX(this.appliConnexion.getStage(), client);
                 }
                 else{
                     pageAccueil = new PageAccueil(this.appliInscription.getStage(), client);

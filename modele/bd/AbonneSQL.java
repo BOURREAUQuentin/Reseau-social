@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,24 +9,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.spi.ResolveResult;
-
-import java.Utilisateur;
-import java.Message;
-
 public class AbonneSQL{
-
-    /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
     
     public AbonneSQL(){
     }
 
-    public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur){
+    public static List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
+            int id = getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -43,9 +33,9 @@ public class AbonneSQL{
         }
     }
 
-    private int getIdUtilisateur(String nomUtilisateur){
+    private static int getIdUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -59,11 +49,11 @@ public class AbonneSQL{
         }
     }
  
-    public List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur){
+    public static List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonneA = ?");
+            int id = getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE join UTILISATEUR on ABONNE.abonnementA = UTILISATEUR.idU where ABONNE.abonneA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -78,11 +68,11 @@ public class AbonneSQL{
         }
     }
 
-    public List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur){
+    public static List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT * FROM UTILISATEUR.U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
+            int id = getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
             ps.setString(1, nomUtilisateur);
             ps.setInt(2, id);
             ResultSet rs = ps.executeQuery();
@@ -98,11 +88,13 @@ public class AbonneSQL{
         }
     }
 
-    public void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible){
+    public static void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
-            ps.setString(1, nomUtilisateur);
-            ps.setString(2, nomUtilisateurCible);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
+            int idUtilisateur = getIdUtilisateur(nomUtilisateur);
+            int idUtilisateurCible = getIdUtilisateur(nomUtilisateurCible);
+            ps.setInt(1, idUtilisateurCible);
+            ps.setInt(2, idUtilisateur);
             ps.executeUpdate();
         }
         catch(SQLException e){
@@ -110,11 +102,13 @@ public class AbonneSQL{
         }
     }
 
-    public void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible){
+    public static void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
-            ps.setString(1, nomUtilisateur);
-            ps.setString(2, nomUtilisateurCible);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
+            int idUtilisateur = getIdUtilisateur(nomUtilisateur);
+            int idUtilisateurCible = getIdUtilisateur(nomUtilisateurCible);
+            ps.setInt(1, idUtilisateurCible);
+            ps.setInt(2, idUtilisateur);
             ps.executeUpdate();
         }
         catch(SQLException e){

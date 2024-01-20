@@ -6,9 +6,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import bd.UtilisateurSQL;
-import src.Client;
-import src.MainClient;
 
 public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
 
@@ -30,7 +27,7 @@ public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
         String motDePasse = passwdf.getText();
         Boolean clientExiste = false;
         try {
-            clientExiste = this.utilisateurSQL.ajouterClient(nomUtilisateur, motDePasse);
+            clientExiste = this.utilisateurSQL.ajouterUtilisateur(nomUtilisateur, motDePasse);
         }
         catch (ClassNotFoundException e) {
             e.printStackTrace();

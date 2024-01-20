@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -40,11 +39,11 @@ public class PageConnexion {
         Label labelNomUtilisateur = new Label("Nom d'utilisateur : ");
         TextField textFieldNomUtilisateur = new TextField();
         textFieldNomUtilisateur.setPromptText("chhumyLeGoat");
-        this.lesElementsGraphiques.put("textFieldNomUtilisateur", textFieldNomUtilisateur);
+        this.lesElementsGraphiques.put("tfNomUtilisateur", textFieldNomUtilisateur);
         Label labelPassword = new Label("Mot de passe : ");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("*********");
-        this.lesElementsGraphiques.put("passwordField", passwordField);
+        this.lesElementsGraphiques.put("passwdf", passwordField);
         Button boutonConnexion = new Button("Se connecter");
         boutonConnexion.setOnAction(new ControleurBoutonConnexion(this));
         boutonConnexion.setPrefWidth(500);
@@ -52,7 +51,7 @@ public class PageConnexion {
         boutonConnexion.setOnMouseEntered(e -> boutonConnexion.setStyle("-fx-background-color: #252527; -fx-background-radius: 10")); // style lors du survol
         boutonConnexion.setOnMouseExited(e -> boutonConnexion.setStyle("-fx-background-color: #424244; -fx-background-radius: 10")); // réinitialisation du style
         boutonConnexion.setTextFill(Color.WHITE);
-        boutonConnexion.setFont(Font.font("Arial", 25));
+        boutonConnexion.setFont(Font.font("Arial", 15));
         Button boutonInscription = new Button("Pas encore de compte ?");
         boutonInscription.setOnAction(new ControleurRetourInscription(this));
         boutonInscription.setPrefWidth(500);
@@ -60,15 +59,15 @@ public class PageConnexion {
         boutonInscription.setOnMouseEntered(e -> boutonInscription.setStyle("-fx-background-color: #252527; -fx-background-radius: 10")); // style lors du survol
         boutonInscription.setOnMouseExited(e -> boutonInscription.setStyle("-fx-background-color: #424244; -fx-background-radius: 10")); // réinitialisation du style
         boutonInscription.setTextFill(Color.WHITE);
-        boutonInscription.setFont(Font.font("Arial", 25));
+        boutonInscription.setFont(Font.font("Arial", 15));
 
         // ajout des elements au gridpane
         gridPaneConnexion.add(labelNomUtilisateur, 0, 0);
         gridPaneConnexion.add(textFieldNomUtilisateur, 0, 1);
-        gridPaneConnexion.add(labelPassword, 1, 0);
-        gridPaneConnexion.add(passwordField, 1, 1);
-        gridPaneConnexion.add(boutonConnexion, 2, 0, 2, 1);
-        gridPaneConnexion.add(boutonInscription, 3, 0, 2, 1);
+        gridPaneConnexion.add(labelPassword, 0, 2);
+        gridPaneConnexion.add(passwordField, 0, 3);
+        gridPaneConnexion.add(boutonConnexion, 0, 4, 1, 2);
+        gridPaneConnexion.add(boutonInscription, 0, 6, 1, 2);
         
         return gridPaneConnexion;
     }
@@ -76,7 +75,7 @@ public class PageConnexion {
     public void showPageConnexion() {
         stage.setTitle("Connexion");
         GridPane gridPaneConnexion = this.getPanelConnexion();
-        Scene scene = new Scene(gridPaneConnexion, 450, 450);
+        Scene scene = new Scene(gridPaneConnexion, 800, 800);
         stage.setScene(scene);
         stage.show();
     }

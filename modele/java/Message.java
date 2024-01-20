@@ -1,20 +1,20 @@
-package java;
-
 public class Message {
     private int idMessage;
     private String contenu;
     private String date;
-    private Utilisateur utilisateur;
+    private int idUtilisateur;
+    private String nomUtilisateur;
 
-    public Message(int idMessage, String contenu, String date, Utilisateur utilisateur) {
+    public Message(int idMessage, String contenu, String date, int idUtilisateur, String nomUtilisateur) {
         this.idMessage = idMessage;
         this.contenu = contenu;
         this.date = date;
-        this.utilisateur = utilisateur;
+        this.idUtilisateur = idUtilisateur;
+        this.nomUtilisateur = nomUtilisateur;
     }
 
-    public int getidMessage() {
-        return this.idMessage;
+    public int getIdMessage() {
+        return idMessage;
     }
 
     public String getContenu() {
@@ -26,10 +26,10 @@ public class Message {
     }
 
     public int getIdUtilisateur() {
-        return this.utilisateur.getIdUtilisateur();
+        return idUtilisateur;
     }
 
     public String getNomUtilisateur(){
-        return this.utilisateur.getNomUtilisateur();
+        return nomUtilisateur;
     }
 }
