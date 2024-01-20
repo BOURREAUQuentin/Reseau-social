@@ -27,6 +27,10 @@ public class PageInscription {
         return this.stage;
     }
 
+    public Map<String, Node> getLesElementsGraphiques(){
+        return this.lesElementsGraphiques;
+    }
+
     private GridPane getPanelInscription(){
         GridPane gridPaneInscription = new GridPane();
         gridPaneInscription.setStyle("-fx-background-color: rgb(21, 203, 153)");
@@ -51,7 +55,7 @@ public class PageInscription {
         boutonInscription.setTextFill(Color.WHITE);
         boutonInscription.setFont(Font.font("Arial", 25));
         Button boutonConnexion = new Button("Déjà un compte ?");
-        boutonConnexion.setOnAction(e -> openLoginPage());
+        boutonConnexion.setOnAction(new ControleurRetourConnexion(this));
         boutonConnexion.setPrefWidth(500);
         boutonConnexion.setStyle("-fx-background-color: #424244; -fx-background-radius: 10");
         boutonConnexion.setOnMouseEntered(e -> boutonConnexion.setStyle("-fx-background-color: #252527; -fx-background-radius: 10")); // style lors du survol
@@ -76,27 +80,5 @@ public class PageInscription {
         Scene scene = new Scene(gridPaneInscription, 450, 450);
         stage.setScene(scene);
         stage.show();
-    }
-
-    /**
-     * Affiche une alerte.
-     *
-     * @param title   Le titre de l'alerte.
-     * @param content Le contenu de l'alerte.
-     */
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    /**
-     * Ouvre la page de connexion.
-     */
-    private void openLoginPage() {
-        LoginPage loginPage = new LoginPage(stage);
-        loginPage.show();
     }
 }

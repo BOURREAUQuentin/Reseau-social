@@ -1,5 +1,10 @@
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -9,11 +14,29 @@ public class PageAccueil {
 
     public PageAccueil(Stage stage, Client client) {
         this.stage = stage;
-        this.client=client;
-        stage.setTitle("Bienvenue sur TUIT'O");
+        this.client = client;
     }
 
-    public void show(){
-        // TODO
+    public void showPageAccueil(){
+        BorderPane borderPane = new BorderPane();
+        // Panel en bas pour écrire des messages
+        TextField messageInput = new TextField();
+        Button sendButton = new Button("Envoyer");
+        sendButton.setOnAction(e -> {
+            String message = messageInput.getText();
+            if (message.isEmpty() || message.equals("") || message.isBlank()) {
+                return;
+            }
+            client.envoyerMessage(message);
+            messageInput.clear();
+        });
+        HBox messageBox = new HBox(messageInput, sendButton);
+        messageBox.setSpacing(10);
+        messageBox.setPadding(new Insets(10));
+        borderPane.setBottom(messageBox);
+
+        Scene scene = new Scene(borderPane, 850, 600);
+        stage.setScene(scene);
+        stage.show();
     }
 }

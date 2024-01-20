@@ -6,18 +6,18 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import bd.ClientSQL;
+import bd.UtilisateurSQL;
 import src.Client;
 import src.MainClient;
 
 public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
 
     private PageInscription appli;
-    private ClientSQL clientSQL;
+    private UtilisateurSQL utilisateurSQL;
 
     public ControleurBoutonInscription(PageInscription appli){
         this.appli = appli;
-        this.clientSQL = new ClientSQL();
+        this.utilisateurSQL = new UtilisateurSQL();
     }
 
     @Override
@@ -30,20 +30,20 @@ public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
         String motDePasse = passwdf.getText();
         Boolean clientExiste = false;
         try {
-            clientExiste = this.clientSQL.ajouterClient(nomUtilisateur, motDePasse);
+            clientExiste = this.utilisateurSQL.ajouterClient(nomUtilisateur, motDePasse);
         }
         catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         if (clientExiste){
             try{
-                Client clientConnecte = this.clientSQL.getClient(nomUtilisateur, motDePasse);
-                if (clientConnecte != null){
+                Utilisateur utilisateurConnecte = this.utilisateurSQL.getUtilisateur(nomUtilisateur, motDePasse);
+                if (utilisateurConnecte != null){
                     Client client = new Client(nomUtilisateur);
                     client.connexionServeur();
-                    MainClient.getInstance().setClientConnecte(clientConnecte);
+                    MainClient.getInstance().setUtilisateurConnecte(utilisateurConnecte);
                     PageAccueil pageAccueil = new PageAccueil(this.appli.getStage(), client);
-                    pageAccueil.show();
+                    pageAccueil.showPageAccueil();
                 }
             }
             catch(ClassNotFoundException e){
