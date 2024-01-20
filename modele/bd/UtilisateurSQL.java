@@ -8,11 +8,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import modele.java.Utilisateur;
+
+/**
+ * La classe UtilisateurSQL gère les opérations liées aux utilisateurs dans une base de données.
+ */
 public class UtilisateurSQL {
 
     public UtilisateurSQL(){
     }
 
+    /**
+     * Récupère le prochain identifiant disponible pour un nouvel utilisateur.
+     *
+     * @return Le prochain identifiant disponible.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static int prochainIdUtilisateur() throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
@@ -29,6 +40,12 @@ public class UtilisateurSQL {
         return 0;
     }
 
+    /**
+     * Récupère la liste de tous les utilisateurs de la base de données.
+     *
+     * @return Une liste d'objets Utilisateur représentant tous les utilisateurs.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static List<Utilisateur> getLesUtilisateurs() throws ClassNotFoundException{
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
@@ -46,6 +63,14 @@ public class UtilisateurSQL {
         }
     }
 
+    /**
+     * Récupère un utilisateur à partir de son nom d'utilisateur et de son mot de passe.
+     *
+     * @param nomUtilisateur Le nom d'utilisateur de l'utilisateur.
+     * @param motDePasse Le mot de passe de l'utilisateur.
+     * @return Un objet Utilisateur correspondant aux informations fournies, ou null si non trouvé.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
@@ -64,6 +89,13 @@ public class UtilisateurSQL {
         }
     }
 
+    /**
+     * Récupère un utilisateur à partir de son nom d'utilisateur.
+     *
+     * @param nomUtilisateur Le nom d'utilisateur de l'utilisateur.
+     * @return Un objet Utilisateur correspondant au nom d'utilisateur, ou null si non trouvé.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
@@ -81,6 +113,14 @@ public class UtilisateurSQL {
         }
     }
 
+    /**
+     * Ajoute un nouvel utilisateur à la base de données.
+     *
+     * @param nomUtilisateur Le nom d'utilisateur du nouvel utilisateur.
+     * @param motDePasse Le mot de passe du nouvel utilisateur.
+     * @return True si l'ajout est réussi, False si l'utilisateur existe déjà.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static boolean ajouterUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             if (utilisateurExiste(nomUtilisateur)){
@@ -99,6 +139,13 @@ public class UtilisateurSQL {
         }
     }
 
+    /**
+     * Vérifie si un utilisateur existe déjà dans la base de données.
+     *
+     * @param nomUtilisateur Le nom d'utilisateur à vérifier.
+     * @return True si l'utilisateur existe, False sinon.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static boolean utilisateurExiste(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
@@ -115,6 +162,13 @@ public class UtilisateurSQL {
         }
     }
 
+    /**
+     * Supprime un utilisateur de la base de données.
+     *
+     * @param nomUtilisateur Le nom d'utilisateur de l'utilisateur à supprimer.
+     * @return True si la suppression est réussie, False sinon.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static boolean supprimerUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");

@@ -8,11 +8,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * La classe MessageSQL gère l'accès à la base de données pour les messages.
+ * Elle fournit des méthodes pour récupérer, ajouter et supprimer des messages,
+ * ainsi que pour récupérer des listes de messages selon différents critères.
+ */
 public class MessageSQL {
 
     public MessageSQL(){
     }
 
+    /**
+     * Renvoie le prochain identifiant disponible pour un message dans la base de données.
+     *
+     * @return Le prochain identifiant de message disponible.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static int prochainIdMessage() throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idM) maxId FROM MESSAGE");
@@ -29,6 +41,13 @@ public class MessageSQL {
         return 0;
     }
 
+    /**
+     * Ajoute un nouveau message à la base de données.
+     *
+     * @param pseudoExpediteur Le pseudo de l'expéditeur du message.
+     * @param contenu Le contenu du message.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static void ajouterMessage(String pseudoExpediteur, String contenu) throws ClassNotFoundException{
         try{
             // requete pour récupérer l'id de l'expéditeur
@@ -56,6 +75,13 @@ public class MessageSQL {
         }
     }
 
+    /**
+     * Récupère un message à partir de son identifiant.
+     *
+     * @param idMessage L'identifiant du message à récupérer.
+     * @return Le message correspondant à l'identifiant, ou null s'il n'est pas trouvé.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static Message recupererMessageParId(int idMessage) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE Natural join UTILISATEUR where idM = ?");
@@ -72,6 +98,12 @@ public class MessageSQL {
         return null;
     }
 
+    /**
+     * Supprime un message de la base de données.
+     *
+     * @param idMessage L'identifiant du message à supprimer.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static void supprimerMessage(int idMessage) throws ClassNotFoundException{
         try{
             // suppression des lignes dans la table LIKE où l'id message existe (contraintes clés étrangères)
@@ -89,6 +121,13 @@ public class MessageSQL {
 
     }
 
+    /**
+     * Vérifie si un identifiant de message est présent dans la base de données.
+     *
+     * @param idMessage L'identifiant du message à vérifier.
+     * @return true si l'identifiant de message est présent, sinon false.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static boolean idMessagePresent(int idMessage) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM MESSAGE WHERE idM = ?");
@@ -107,6 +146,15 @@ public class MessageSQL {
         }
     }
 
+    /**
+     * Récupère un message à partir de sa date, du nom de l'utilisateur et de son contenu.
+     *
+     * @param date La date du message à récupérer.
+     * @param nomUtilisateur Le nom de l'utilisateur associé au message.
+     * @param contenu Le contenu du message à récupérer.
+     * @return Le message correspondant aux critères spécifiés, ou null s'il n'est pas trouvé.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static Message recupererMessage(String date, String nomUtilisateur, String contenu) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where contenuM = ? and dateM = ? and nomUtilisateur = ?");
@@ -125,6 +173,14 @@ public class MessageSQL {
         return null;
     }
 
+    /**
+     * Récupère une liste de messages triée par date pour un utilisateur spécifié,
+     * incluant à la fois ses propres messages et ceux de ses abonnements.
+     *
+     * @param nomUtilisateur Le nom de l'utilisateur pour lequel récupérer les messages.
+     * @return Une liste de messages triée par date.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     public static List<Message> recupererMessagesClientOrdonne(String nomUtilisateur)  throws ClassNotFoundException {
         // récupère les messages du client mais aussi les messages de ses abonnements
         List<Message> recupererMessagesClientOrdonne = new ArrayList<>();
@@ -134,6 +190,13 @@ public class MessageSQL {
         return recupererMessagesClientOrdonne;
     }
 
+    /**
+     * Récupère une liste de messages associés à un utilisateur spécifié.
+     *
+     * @param nomUtilisateur Le nom de l'utilisateur pour lequel récupérer les messages.
+     * @return Une liste de messages associés à l'utilisateur.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     private static List<Message> recupererMessagesUtilisateur(String nomUtilisateur) throws ClassNotFoundException {
         List<Message> messages = new ArrayList<>();
         try {
@@ -151,6 +214,13 @@ public class MessageSQL {
         return messages;
     }
 
+    /**
+     * Récupère une liste de messages des abonnements d'un utilisateur spécifié.
+     *
+     * @param nomUtilisateur Le nom de l'utilisateur pour lequel récupérer les abonnements.
+     * @return Une liste de messages des abonnements de l'utilisateur.
+     * @throws ClassNotFoundException Si la classe du pilote JDBC n'est pas trouvée.
+     */
     private static List<Message> recupererMessagesAbonnements(String nomUtilisateur) throws ClassNotFoundException{
         List<Message> messages = new ArrayList<>();
         try{
