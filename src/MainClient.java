@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class MainClient extends Application {
-    private Client clientConnecte;
+    private Utilisateur utilisateurConnecte;
     private static MainClient instanceClient;
 
     public static MainClient getInstance() {
@@ -14,12 +14,12 @@ public class MainClient extends Application {
         return instanceClient;
     }
 
-    public void setClientConnecte(Client clientConnecte) {
-        this.clientConnecte = clientConnecte;
+    public void setUtilisateurConnecte(Utilisateur utilisateurConnecte) {
+        this.utilisateurConnecte = utilisateurConnecte;
     }
 
-    public Client getClientConnecte() {
-        return this.clientConnecte;
+    public Utilisateur getUtilisateurConnecte() {
+        return this.utilisateurConnecte;
     }
 
     @Override
