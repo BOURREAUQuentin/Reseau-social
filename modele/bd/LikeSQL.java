@@ -12,7 +12,7 @@ public class LikeSQL {
     public LikeSQL(){
     }
 
-    public int getIdClient(String pseudoClient){
+    private int getIdClient(String pseudoClient){
         try{
             PreparedStatement ps = connexion.prepareStatement("select idC from CLIENT where nomUtilisateurC = ?");
             ps.setString(1, pseudoClient);
