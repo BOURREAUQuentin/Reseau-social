@@ -13,7 +13,7 @@ public class Message {
         this.nomUtilisateur = nomUtilisateur;
     }
 
-    public int getidMessage() {
+    public int getIdMessage() {
         return idMessage;
     }
 

@@ -13,7 +13,7 @@ public class MessageSQL {
     public MessageSQL(){
     }
 
-    public int prochainIdMessage() throws ClassNotFoundException{
+    public static int prochainIdMessage() throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idM) maxId FROM MESSAGE");
             ResultSet rs = ps.executeQuery();
@@ -29,7 +29,7 @@ public class MessageSQL {
         return 0;
     }
 
-    public void ajouterMessage(String pseudoExpediteur, String contenu) throws ClassNotFoundException{
+    public static void ajouterMessage(String pseudoExpediteur, String contenu) throws ClassNotFoundException{
         try{
             // requete pour récupérer l'id de l'expéditeur
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU FROM UTILISATEUR where nomUtilisateur = ?");
@@ -42,7 +42,7 @@ public class MessageSQL {
 
             // requete pour l'ajout de message
             PreparedStatement ps2 = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO MESSAGE (idM, contenuM, dateM, idU) VALUES (?, ?, ?, ?)");
-            ps2.setInt(1, this.prochainIdMessage());
+            ps2.setInt(1, prochainIdMessage());
             ps2.setString(2, contenu);
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formateur = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -56,7 +56,7 @@ public class MessageSQL {
         }
     }
 
-    public Message recupererMessageParId(int idMessage) throws ClassNotFoundException{
+    public static Message recupererMessageParId(int idMessage) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE Natural join UTILISATEUR where idM = ?");
             ps.setInt(1, idMessage);
@@ -72,7 +72,7 @@ public class MessageSQL {
         return null;
     }
 
-    public void supprimerMessage(int idMessage) throws ClassNotFoundException{
+    public static void supprimerMessage(int idMessage) throws ClassNotFoundException{
         try{
             // suppression des lignes dans la table LIKE où l'id message existe (contraintes clés étrangères)
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM LIKE WHERE idM = ?");
@@ -89,7 +89,25 @@ public class MessageSQL {
 
     }
 
-    public Message recupererMessage(String date, String nomUtilisateur, String contenu) throws ClassNotFoundException{
+    public static boolean idMessagePresent(int idMessage) throws ClassNotFoundException{
+        try{
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM MESSAGE WHERE idM = ?");
+            ps.setInt(1, idMessage);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static Message recupererMessage(String date, String nomUtilisateur, String contenu) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where contenuM = ? and dateM = ? and nomUtilisateur = ?");
             ps.setString(1, contenu);
@@ -107,7 +125,7 @@ public class MessageSQL {
         return null;
     }
 
-    public List<Message> recupererMessagesClientOrdonne(String nomUtilisateur)  throws ClassNotFoundException {
+    public static List<Message> recupererMessagesClientOrdonne(String nomUtilisateur)  throws ClassNotFoundException {
         // récupère les messages du client mais aussi les messages de ses abonnements
         List<Message> recupererMessagesClientOrdonne = new ArrayList<>();
         recupererMessagesClientOrdonne.addAll(recupererMessagesUtilisateur(nomUtilisateur));
@@ -116,7 +134,7 @@ public class MessageSQL {
         return recupererMessagesClientOrdonne;
     }
 
-    private List<Message> recupererMessagesUtilisateur(String nomUtilisateur) throws ClassNotFoundException {
+    private static List<Message> recupererMessagesUtilisateur(String nomUtilisateur) throws ClassNotFoundException {
         List<Message> messages = new ArrayList<>();
         try {
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where nomUtilisateur = ?");
@@ -133,7 +151,7 @@ public class MessageSQL {
         return messages;
     }
 
-    private List<Message> recupererMessagesAbonnements(String nomUtilisateur) throws ClassNotFoundException{
+    private static List<Message> recupererMessagesAbonnements(String nomUtilisateur) throws ClassNotFoundException{
         List<Message> messages = new ArrayList<>();
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT M.idM, M.idU, M.contenuM, M.dateM, C.nomUtilisateur FROM MESSAGE M join ABONNE A on M.idU = A.abonneA join UTILISATEUR C on M.idU = C.idU where A.abonnementA = (select idU FROM UTILISATEUR where nomUtilisateur = ?) order by M.dateM desc");

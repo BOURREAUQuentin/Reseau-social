@@ -13,7 +13,7 @@ public class UtilisateurSQL {
     public UtilisateurSQL(){
     }
 
-    public int prochainIdUtilisateur() throws ClassNotFoundException{
+    public static int prochainIdUtilisateur() throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
@@ -29,7 +29,7 @@ public class UtilisateurSQL {
         return 0;
     }
 
-    public List<Utilisateur> getLesUtilisateurs() throws ClassNotFoundException{
+    public static List<Utilisateur> getLesUtilisateurs() throws ClassNotFoundException{
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR");
@@ -46,7 +46,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
+    public static Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
             ps.setString(1, nomUtilisateur);
@@ -64,7 +64,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
+    public static Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -81,13 +81,13 @@ public class UtilisateurSQL {
         }
     }
 
-    public boolean ajouterUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
+    public static boolean ajouterUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             if (utilisateurExiste(nomUtilisateur)){
                 return false;
             }
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
-            ps.setInt(1, this.prochainIdUtilisateur());
+            ps.setInt(1, prochainIdUtilisateur());
             ps.setString(2, nomUtilisateur);
             ps.setString(3, motDePasse);
             ResultSet rs = ps.executeQuery();
@@ -99,7 +99,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public boolean utilisateurExiste(String nomUtilisateur) throws ClassNotFoundException{
+    public static boolean utilisateurExiste(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -115,7 +115,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public boolean supprimerUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
+    public static boolean supprimerUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);

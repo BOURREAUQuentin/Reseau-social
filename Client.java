@@ -19,6 +19,35 @@ public class Client {
 
     public Client(String pseudoClient){
         this.pseudoClient = pseudoClient;
+        List<Utilisateur> liste;
+        try {
+            liste = AbonneSQL.getUtilisateurAbonnes(pseudoClient);
+            for (Utilisateur utilisateur : liste) {
+                System.out.println("amis : "+utilisateur.getNomUtilisateur());
+                ClientsAbonnements.add(utilisateur.getNomUtilisateur());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        List<Utilisateur> liste2;
+        try {
+            liste2 = AbonneSQL.getUtilisateurAbonnes(pseudoClient);
+            for (Utilisateur utilisateur : liste2) {
+                ClientsAbonnes.add(utilisateur.getNomUtilisateur());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        List<Utilisateur> liste3;
+        try {
+            liste3 = AbonneSQL.getUtilisateurNonAbonnes(pseudoClient);
+            for (Utilisateur utilisateur : liste3) {
+                ClientsNonAbonnes.add(utilisateur.getNomUtilisateur());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         try{
             this.socketClient = new Socket(ADRESSE_IP, PORT);
             this.lecteurClient = new BufferedReader(new InputStreamReader(this.socketClient.getInputStream()));
@@ -31,6 +60,10 @@ public class Client {
 
     public String getPseudoClient() {
         return pseudoClient;
+    }
+
+    public int getIdUser() throws ClassNotFoundException{
+        return UtilisateurSQL.getUtilisateurParNomUtilisateur(pseudoClient).getIdUtilisateur();
     }
 
     public List<String> getClientsAbonnements(){
@@ -51,11 +84,22 @@ public class Client {
             try {
                 String serveurMessage;
                 while ((serveurMessage = this.lecteurClient.readLine()) != null) {
-                    if (serveurMessage.contains(this.pseudoClient)){
+                    if (serveurMessage.equals("Votre compte a été supprimé. La connexion sera fermée.")){
+                        PageAccueil.afficherPopUpBannissement();
+                    }
+                    else if (serveurMessage.contains("///likeDislike")){ // permet de mettre a jour le nombre de like et dislike du message concerné
                         PageAccueil.afficheMessage(serveurMessage);
                     }
-                    for (String clientAbonne : ClientsAbonnements){
-                        if (serveurMessage.contains(clientAbonne)){
+                    else if (serveurMessage.contains("///SUPPRIMER")){ // permet de supprimer le message concerné
+                        PageAccueil.supprimerMessageEtMettreAjourAffichage(serveurMessage);
+                    }
+                    else{
+                        for (String s : ClientsAbonnements){
+                            if (serveurMessage.contains(s)){
+                                PageAccueil.afficheMessage(serveurMessage);
+                            }
+                        }
+                        if (serveurMessage.contains(pseudoClient)){
                             PageAccueil.afficheMessage(serveurMessage);
                         }
                     }
@@ -66,6 +110,13 @@ public class Client {
         }).start();
         this.ecriteurClient.println(this.pseudoClient);
         System.out.println("Connecté en tant que : " + this.pseudoClient);
+    }
+
+    public void likeMessage(String date,String pseudo, String contenu) throws ClassNotFoundException{
+        Message m = MessageSQL.recupererMessage(date,pseudo,contenu);
+        LikeSQL.ajouterLike(m.getIdMessage(), this.pseudoClient);
+        int compteur = LikeSQL.nbLikesMessage(m.getIdMessage());
+        envoyerMessage("/likeDislike "+m.getIdMessage()+" "+compteur);
     }
 
     public void ajouterAbonnement(String pseudo){
@@ -88,5 +139,12 @@ public class Client {
 
     public void envoyerMessage(String message) {
         this.ecriteurClient.println(message);
+    }
+
+    public void supprimerMessage(String date,String pseudo, String contenu) throws ClassNotFoundException{
+        System.out.println("supprimer message");
+        Message m = MessageSQL.recupererMessage(date, pseudo, contenu);
+        System.out.println(" message : " + m.getContenu());
+        this.envoyerMessage("/supprimerMessage " + m.getIdMessage());
     }
 }

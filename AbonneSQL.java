@@ -14,10 +14,10 @@ public class AbonneSQL{
     public AbonneSQL(){
     }
 
-    public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur) throws ClassNotFoundException{
+    public static List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
+            int id = getIdUtilisateur(nomUtilisateur);
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -33,7 +33,7 @@ public class AbonneSQL{
         }
     }
 
-    private int getIdUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
+    private static int getIdUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -49,10 +49,10 @@ public class AbonneSQL{
         }
     }
  
-    public List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur) throws ClassNotFoundException{
+    public static List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
+            int id = getIdUtilisateur(nomUtilisateur);
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonneA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -68,11 +68,11 @@ public class AbonneSQL{
         }
     }
 
-    public List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur) throws ClassNotFoundException{
+    public static List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR.U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
+            int id = getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
             ps.setString(1, nomUtilisateur);
             ps.setInt(2, id);
             ResultSet rs = ps.executeQuery();
@@ -88,7 +88,7 @@ public class AbonneSQL{
         }
     }
 
-    public void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
+    public static void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
             ps.setString(1, nomUtilisateur);
@@ -100,7 +100,7 @@ public class AbonneSQL{
         }
     }
 
-    public void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
+    public static void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
             ps.setString(1, nomUtilisateur);
