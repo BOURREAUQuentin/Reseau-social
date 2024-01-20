@@ -9,19 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MessageSQL {
-    /** connexion à la base de donnée */
-    private Connection connexion;
 
-    public MessageSQL(Connexion connexionBD){
-        try{
-            this.connexion = connexionBD.getConnection();
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
+    public MessageSQL(){
     }
 
     public int prochainIdMessage() throws ClassNotFoundException{
