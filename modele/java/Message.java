@@ -4,19 +4,17 @@ public class Message {
     private int idMessage;
     private String contenu;
     private String date;
-    private int idUtilisateur;
-    private String nomUtilisateur;
+    private Utilisateur utilisateur;
 
-    public Message(int idMessage, String contenu, String date, int idUtilisateur, String nomUtilisateur) {
+    public Message(int idMessage, String contenu, String date, Utilisateur utilisateur) {
         this.idMessage = idMessage;
         this.contenu = contenu;
         this.date = date;
-        this.idUtilisateur = idUtilisateur;
-        this.nomUtilisateur = nomUtilisateur;
+        this.utilisateur = utilisateur;
     }
 
     public int getidMessage() {
-        return idMessage;
+        return this.idMessage;
     }
 
     public String getContenu() {
@@ -28,10 +26,10 @@ public class Message {
     }
 
     public int getIdUtilisateur() {
-        return idUtilisateur;
+        return this.utilisateur.getIdUtilisateur();
     }
 
     public String getNomUtilisateur(){
-        return nomUtilisateur;
+        return this.utilisateur.getNomUtilisateur();
     }
 }

@@ -31,7 +31,7 @@ public class LikeSQL {
     public void ajouterLike(int idMessage, String nomUtilisateurClient){
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
-            PreparedStatement ps2 = connexion.prepareStatement("insert into LIKE (idM, idU) values (?, ?)");
+            PreparedStatement ps2 = connexion.prepareStatement("insert into LIKES (idM, idU) values (?, ?)");
             ps2.setInt(1, idMessage);
             ps2.setInt(2, idClient);
             ps2.executeUpdate();
@@ -44,7 +44,7 @@ public class LikeSQL {
     public void supprimerLike(int idMessage, String nomUtilisateurClient){
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
-            PreparedStatement ps = connexion.prepareStatement("delete from LIKE where idM = ? and idU = ?");
+            PreparedStatement ps = connexion.prepareStatement("delete from LIKES where idM = ? and idU = ?");
             ps.setInt(1, idMessage);
             ps.setInt(2, idClient);
             ps.executeUpdate();
@@ -57,7 +57,7 @@ public class LikeSQL {
     public int nbLikesMessage(int idMessage){
         int nbLikes = 0;
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT count(*) nbLikes FROM LIKE where idM = ?");
+            PreparedStatement ps = connexion.prepareStatement("SELECT count(*) nbLikes FROM LIKES where idM = ?");
             ps.setInt(1, idMessage);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
