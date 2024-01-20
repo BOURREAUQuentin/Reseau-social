@@ -36,10 +36,10 @@ public class ConnexionBD {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			this.connection = DriverManager.getConnection("jdbc:mysql://"+nomServeur+":3306/"+nomBase,nomLogin,motDePasse);
 		} catch ( SQLException ex ) {
-			System.out.println("Msg : " + ex.getMessage() + "   " + ex.getErrorCode());
+			ex.printStackTrace();
 		}
 		catch(ClassNotFoundException ex){
-			System.out.println("Msg : " + ex.getMessage());
+			ex.printStackTrace();
 		}
 		this.isConnected = this.connection != null;
 	}

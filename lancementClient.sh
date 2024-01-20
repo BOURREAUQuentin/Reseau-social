@@ -1,2 +1,2 @@
 javac --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls,javafx.media *.java
-java --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls,javafx.media MainClient
+java -cp .:lib/mysql-connector-j-8.2.0.jar --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls,javafx.media MainClient
