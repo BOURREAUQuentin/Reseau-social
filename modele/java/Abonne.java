@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Abonne{
     private int abonnementA;
     private int abonneA;
-    private List<Client> listeAbonnes;
+    private List<Utilisateur> listeAbonnes;
 
     public Abonne(int abonnementA, int abonneA){
         this.abonnementA = abonnementA;
@@ -20,11 +20,11 @@ public class Abonne{
         return this.abonneA;
     }
 
-    public void ajouterAbonne(Client abonne){
+    public void ajouterAbonne(Utilisateur abonne){
         this.listeAbonnes.add(abonne);
     }
 
-    public void supprimerAbonne(Client client){
-        this.listeAbonnes.remove(client);
+    public void supprimerAbonne(Utilisateur utilisateur){
+        this.listeAbonnes.remove(utilisateur);
     }
 }

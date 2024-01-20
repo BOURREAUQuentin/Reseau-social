@@ -12,7 +12,10 @@ import java.util.List;
 
 import javax.naming.spi.ResolveResult;
 
-import java.Client;
+import java.Utilisateur;
+import src.Client;
+
+import java.Utilisateur;
 import java.Message;
 
 public class ClientSQL {
@@ -22,15 +25,15 @@ public class ClientSQL {
     public ClientSQL(){
     }
 
-    public int prochainIdClient(){
+    public int prochainIdUtilisateur(){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT max(idC) maxId FROM CLIENT");
+            PreparedStatement ps = connexion.prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
-            int maxIdClientActuel = 0;
+            int maxIdUtilisateurActuel = 0;
             if (rs.next()) {
-                maxIdClientActuel = rs.getInt("maxId");
+                maxIdUtilisateurActuel = rs.getInt("maxId");
             }
-            return maxIdClientActuel + 1;
+            return maxIdUtilisateurActuel + 1;
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -38,32 +41,32 @@ public class ClientSQL {
         return 0;
     }
 
-    public List<Client> getLesClients(){
-        List<Client> lesClients = new ArrayList<>();
+    public List<Utilisateur> getLesUtilisateur(){
+        List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM CLIENT");
+            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                Client c = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
-                lesClients.add(c);
+                Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
+                lesUtilisateurs.add(utilisateur);
             }
-            return lesClients;
+            return lesUtilisateurs;
         }
         catch (SQLException e) {
             e.printStackTrace();
-            return lesClients;
+            return lesUtilisateurs;
         }
     }
 
-    public Client getClient(String nomUtilisateur, String motDePasse){
+    public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse){
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM CLIENT where nomUtilisateurC = ? AND mdpC = ?");
+            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
             ps.setString(1, nomUtilisateur);
             ps.setString(2, motDePasse);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
-                Client c = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
-                return c;
+                Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
+                return utilisateur;
             }
             return null;
         }
@@ -73,14 +76,14 @@ public class ClientSQL {
         }
     }
 
-    public Client getClientParNomUtilisateur(String nomUtilisateur){
+    public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM CLIENT where nomUtilisateurC = ?");
+            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
-                Client c = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
-                return c;
+                Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
+                return utilisateur;
             }
             return null;
         }
@@ -92,11 +95,11 @@ public class ClientSQL {
 
     public boolean ajouterClient(String nomUtilisateur, String motDePasse){
         try{
-            if (clientExiste(nomUtilisateur)){
+            if (utilisateurExiste(nomUtilisateur)){
                 return false;
             }
-            PreparedStatement ps = connexion.prepareStatement("INSERT INTO CLIENT (idC, nomUtilisateurC, mdpC) values (?,?,?)");
-            ps.setInt(1, this.prochainIdClient());
+            PreparedStatement ps = connexion.prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
+            ps.setInt(1, this.prochainIdUtilisateur());
             ps.setString(2, nomUtilisateur);
             ps.setString(3, motDePasse);
             ResultSet rs = ps.executeQuery();
@@ -108,9 +111,9 @@ public class ClientSQL {
         }
     }
 
-    public boolean clientExiste(String nomUtilisateur){
+    public boolean utilisateurExiste(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT nomUtilisateurC FROM CLIENT where nomUtilisateurC = ?");
+            PreparedStatement ps = connexion.prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -124,9 +127,9 @@ public class ClientSQL {
         }
     }
 
-    public boolean supprimerClient(String nomUtilisateur){
+    public boolean supprimerUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM CLIENT WHERE nomUtilisateur = ?");
+            PreparedStatement ps = connexion.prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             return true;

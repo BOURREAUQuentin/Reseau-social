@@ -6,13 +6,14 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.naming.spi.ResolveResult;
 
-import java.Client;
+import java.Utilisateur;
 import java.Message;
 
 public class AbonneSQL{
@@ -23,15 +24,15 @@ public class AbonneSQL{
     public AbonneSQL(){
     }
 
-    public List<Client> getUtilisateursAbonnements(String nomUtilisateur){
-        List<Client> listeUtilisateurs = new ArrayList<>();
+    public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur){
+        List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdClient(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idC, nomUtilisateurC, mdpC FROM ABONNE natural join CLIENT where abonnementA = ?");
+            int id = this.getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                Client client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
+                Utilisateur client = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
                 listeUtilisateurs.add(client);
             }
             return listeUtilisateurs;
@@ -42,13 +43,13 @@ public class AbonneSQL{
         }
     }
 
-    private int getIdClient(String nomUtilisateur){
+    private int getIdUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("select idC from CLIENT where nomUtilisateurC = ?");
+            PreparedStatement ps = connexion.prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
-                return rs.getInt("idC");
+                return rs.getInt("idU");
             }
             return 0;
         }
@@ -58,16 +59,16 @@ public class AbonneSQL{
         }
     }
  
-    public List<Client> getUtilisateurAbonnes(String nomUtilisateur){
-        List<Client> listeUtilisateurs = new ArrayList<>();
+    public List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur){
+        List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdClient(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idC, nomUtilisateurC, mdpC FROM ABONNE natural join CLIENT where abonneA = ?");
+            int id = this.getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonneA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                Client client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
-                listeUtilisateurs.add(client);
+                Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
+                listeUtilisateurs.add(utilisateur);
             }
             return listeUtilisateurs;
         }
@@ -77,17 +78,17 @@ public class AbonneSQL{
         }
     }
 
-    public List<Client> getUtilisateurNonAbonnes(String nomUtilisateur){
-        List<Client> listeUtilisateurs = new ArrayList<>();
+    public List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur){
+        List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
-            int id = this.getIdClient(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT * FROM CLIENT.C WHERE C.idC != (SELECT idC FROM CLIENT WHERE nomUtilisateurC = ?) AND C.idC NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
+            int id = this.getIdUtilisateur(nomUtilisateur);
+            PreparedStatement ps = connexion.prepareStatement("SELECT * FROM UTILISATEUR.U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
             ps.setString(1, nomUtilisateur);
             ps.setInt(2, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                Client client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3));
-                listeUtilisateurs.add(client);
+                Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
+                listeUtilisateurs.add(utilisateur);
             }
             return listeUtilisateurs;
         }
