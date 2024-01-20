@@ -114,38 +114,51 @@ public class MessageSQL {
         return null;
     }
 
-    public static List<Message> recupererLesMessageDeTousSesAmisDansOrdreDate(String pseudo) throws ClassNotFoundException {
-        List<Message> messages = new ArrayList<>();
-
+    public List<Message> recupererMessagesClientOrdonne(String nomUtilisateur) {
+        // récupère les messages du client mais aussi les messages de ses abonnements
+        List<Message> recupererMessagesClientOrdonne = new ArrayList<>();
         try {
-            // Requête SQL avec LEFT JOIN pour récupérer les messages des amis
-            PreparedStatement ps = Main.getInstance().getSqlConnect().prepareStatement("select id_M,id_U,contenu,date,pseudo from MESSAGES natural join UTILISATEUR where pseudo=?");
-
-            PreparedStatement ps2 = Main.getInstance().getSqlConnect().prepareStatement("SELECT M.id_M,M.id_U,M.contenu,M.date,U.pseudo FROM MESSAGES M JOIN AMIS A ON M.id_U = A.suivi JOIN UTILISATEUR U ON M.id_U = U.id_U WHERE A.suiveur = (SELECT id_U FROM UTILISATEUR WHERE pseudo = ?) ORDER BY M.date DESC");
-            ps.setString(1, pseudo);
-            ps2.setString(1, pseudo);
-            ResultSet rs = ps.executeQuery();
-            ResultSet rs2 = ps2.executeQuery();
-            while (rs.next()) {
-                Message message = new Message(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5));
-                messages.add(message);
-                
-            }
-            while (rs2.next()) {
-                Message message = new Message(rs2.getInt(1), rs2.getInt(2), rs2.getString(3), rs2.getString(4), rs2.getString(5));
-                messages.add(message);
-                
-            }
-        } 
+            recupererMessagesClientOrdonne.addAll(recupererMessagesUtilisateur(nomUtilisateur));
+            recupererMessagesClientOrdonne.addAll(recupererMessagesAbonnements(nomUtilisateur));
+        }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        Collections.sort(recupererMessagesClientOrdonne, new MessageDateComparator());
+        return recupererMessagesClientOrdonne;
+    }
 
-        // Tri de la liste par date dans l'ordre decroissant
-        Collections.sort(messages, (msg1, msg2) -> msg1.getDate().compareTo(msg2.getDate()));
-        
-        //Collections.sort(messages, (msg1, msg2) -> msg1.getDate().compareTo(msg2.getDate()));
+    private List<Message> recupererMessagesUtilisateur(String nomUtilisateur) {
+        List<Message> messages = new ArrayList<>();
+        try {
+            PreparedStatement ps = connexion.prepareStatement("select idM, contenuM, dateM, idC, nomUtilisateurC FROM MESSAGE natural join CLIENT where nomUtilisateurC = ?");
+            ps.setString(1, nomUtilisateur);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
+                messages.add(message);
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return messages;
+    }
 
+    private List<Message> recupererMessagesAbonnements(String nomUtilisateur){
+        List<Message> messages = new ArrayList<>();
+        try{
+            PreparedStatement ps = connexion.prepareStatement("SELECT M.idM, M.idC, M.contenuM, M.dateM, C.nomUtilisateurC FROM MESSAGE M join ABONNE A on M.idC = A.abonneA join CLIENT C on M.idC = C.idC where A.abonnementA = (select idC FROM CLIENT where nomUtilisateurC = ?) order by M.dateM desc");
+            ps.setString(1, nomUtilisateur);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(rs.getInt("idM"), rs.getString("contenuM"), rs.getString("dateM"), rs.getInt("idC"), rs.getString("nomUtilisateurC"));
+                messages.add(message);
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
         return messages;
     }
 }
