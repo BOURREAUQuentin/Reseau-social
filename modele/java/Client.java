@@ -4,25 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    private int id;
-    private String nomUtilisateur;
+    private int idC;
+    private String nomUtilisateurC;
+    private String mdpC;
 
-    public Client(int id, String nomUtilisateur) {
-        this.id = id;
-        this.nomUtilisateur = nomUtilisateur;
-        this.listeAbonnes = new ArrayList<>();
+    public Client(int id, String nomUtilisateur, String mdp) {
+        this.idC = id;
+        this.nomUtilisateurC = nomUtilisateur;
+        this.mdpC = mdp;
+    }
+
+    public int getIdUtilisateur(){
+        return this.idC;
     }
 
     public String getNomUtilisateur() {
-        return nomUtilisateur;
+        return nomUtilisateurC;
     }
 
-    public List<Client> getListeAbonnes() {
-        return listeAbonnes;
+    public String getMdp(){
+        return this.mdpC;
     }
-
+    
     @Override
     public String toString() {
-        return nomUtilisateur;
+        return nomUtilisateurC;
     }
 }
