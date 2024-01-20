@@ -1,2 +1,2 @@
-javac -d bin --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls --add-modules javafx.media *.java
-java -cp bin:img --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls --add-modules javafx.media ClientFX
+javac -d src:bin --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls --add-modules javafx.media *.java
+java -cp src:bin:img --module-path /usr/share/openjfx/lib/ --add-modules javafx.controls --add-modules javafx.media ClientFX

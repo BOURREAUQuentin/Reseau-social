@@ -1,0 +1,32 @@
+-- fichier de création de la base de données du projet
+CREATE TABLE IF NOT EXISTS 'CLIENT' (
+    idC INT NOT NULL,
+    nomUtilisateurC VARCHAR(100) UNIQUE NOT NULL,
+    mdpC VARCHAR(100) UNIQUE NOT NULL,
+    PRIMARY KEY (idC)
+);
+
+CREATE TABLE IF NOT EXISTS 'ABONNE' (
+    abonnementA INT NOT NULL,
+    abonneA INT NOT NULL,
+    FOREIGN KEY (abonnementA) REFERENCES CLIENT(idC),
+    FOREIGN KEY (abonneA) REFERENCES CLIENT(idC),
+    PRIMARY KEY (abonnementA, abonneA)
+);
+
+CREATE TABLE IF NOT EXISTS 'MESSAGE' (
+    idM INT NOT NULL,
+    contenuM VARCHAR(150) NOT NULL,
+    idC INT NOT NULL,
+    dateM DATETIME NOT NULL,
+    FOREIGN KEY (idX) REFERENCES CLIENT(idC),
+    PRIMARY KEY (idM)
+);
+
+CREATE TABLE IF NOT EXISTS 'LIKE' (
+    idM INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idM) REFERENCES MESSAGE(idM),
+    FOREIGN KEY (idC) REFERENCES CLIENT(idC),
+    PRIMARY KEY (idM, idC)
+);
