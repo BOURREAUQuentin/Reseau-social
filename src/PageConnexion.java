@@ -12,23 +12,47 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * La classe PageConnexion représente la page de connexion de l'application.
+ * Elle permet aux utilisateurs existants de se connecter à leur compte.
+ */
 public class PageConnexion {
     private Stage stage;
     private Map<String, Node> lesElementsGraphiques;
 
+    /**
+     * Constructeur de la classe PageConnexion.
+     *
+     * @param stage La fenêtre principale de l'application.
+     */
     public PageConnexion(Stage stage) {
         this.stage = stage;
         this.lesElementsGraphiques = new HashMap<>();
     }
 
+    /**
+     * Obtient la fenêtre principale de l'application.
+     *
+     * @return La fenêtre principale.
+     */
     public Stage getStage(){
         return this.stage;
     }
 
+    /**
+     * Obtient les éléments graphiques de la page de connexion.
+     *
+     * @return Une map contenant les éléments graphiques.
+     */
     public Map<String, Node> getLesElementsGraphiques(){
         return this.lesElementsGraphiques;
     }
 
+    /**
+     * Crée et retourne le panneau de connexion avec ses éléments graphiques.
+     *
+     * @return Un objet GridPane représentant le panneau de connexion.
+     */
     private GridPane getPanelConnexion(){
         GridPane gridPaneConnexion = new GridPane();
         gridPaneConnexion.setStyle("-fx-background-color: rgb(21, 203, 153)");
@@ -72,6 +96,9 @@ public class PageConnexion {
         return gridPaneConnexion;
     }
 
+    /**
+     * Affiche la page de connexion de l'application.
+     */
     public void showPageConnexion() {
         stage.setTitle("Connexion");
         GridPane gridPaneConnexion = this.getPanelConnexion();

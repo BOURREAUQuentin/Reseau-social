@@ -17,6 +17,11 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * La classe ClientFX représente l'interface graphique d'un client dans une application de messagerie.
+ * Elle permet à un utilisateur de se connecter à un serveur, d'échanger des messages avec d'autres clients
+ * et de gérer ses abonnements.
+ */
 public class ClientFX extends Application {
 
     private Socket socket;
@@ -30,10 +35,20 @@ public class ClientFX extends Application {
     private Set<Client> connectedClients = new HashSet<>();
     private Client clientConnecte;
 
+    /**
+     * Méthode principale pour lancer l'application JavaFX.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Méthode appelée au démarrage de l'application.
+     *
+     * @param primaryStage La fenêtre principale de l'application.
+     */
     @Override
     public void start(Stage primaryStage) {
         connectionPage = createConnectionPage();
@@ -49,6 +64,11 @@ public class ClientFX extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Crée la page de connexion avec les champs de nom et de bouton de connexion.
+     *
+     * @return Une instance de BorderPane représentant la page de connexion.
+     */
     private BorderPane createConnectionPage() {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
@@ -71,6 +91,12 @@ public class ClientFX extends Application {
         return root;
     }
 
+    /**
+     * Crée la page principale de l'application avec le journal des messages, la liste des clients connectés,
+     * le champ de saisie de message et le bouton d'envoi.
+     *
+     * @return Une instance de BorderPane représentant la page principale.
+     */
     private BorderPane createMainPage() {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
@@ -102,6 +128,9 @@ public class ClientFX extends Application {
         return root;
     }
 
+    /**
+     * Gère la connexion à un serveur en établissant une connexion socket et en lançant un thread pour la lecture des messages.
+     */
     private void connectToServer() {
         String clientName = nameField.getText();
         clientConnecte = new Client(clientName);
@@ -175,6 +204,10 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Envoie un message au serveur à partir du contenu du champ de saisie de message.
+     * Le message est également ajouté à la liste des messages du client local.
+     */
     private void sendMessage() {
         String messageContent = messageField.getText();
         if (!messageContent.isEmpty()) {
@@ -185,6 +218,9 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Ferme la connexion socket lorsque l'application est fermée.
+     */
     private void closeConnection() {
         if (socket != null && !socket.isClosed()) {
             try {
@@ -195,6 +231,11 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Traite un message de la liste des clients envoyée par le serveur et met à jour la liste des clients connectés.
+     *
+     * @param message Le message de la liste des clients envoyé par le serveur.
+     */
     private void handleClientListMessage(String message) {
         String[] parts = message.split(" ");
         if (parts.length == 2) {
@@ -221,6 +262,12 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Bascule l'abonnement à un client cible en fonction de l'état actuel du bouton d'abonnement.
+     *
+     * @param targetClient Le nom du client cible.
+     * @param subscribeButton Le bouton d'abonnement associé.
+     */
     private void toggleSubscription(String targetClient, Button subscribeButton) {
         String message;
         Client target = findClientById(targetClient);
@@ -240,6 +287,13 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Bascule l'état de "j'aime" pour un message en fonction de l'état actuel du bouton "j'aime".
+     *
+     * @param targetClient Le client qui a envoyé le message.
+     * @param likeButton Le bouton "j'aime" associé.
+     * @param message Le contenu du message.
+     */
     private void toggleLike(String targetClient, Button likeButton, String message) {
         String messageRetour;
         Client target = null;
@@ -265,6 +319,12 @@ public class ClientFX extends Application {
         }
     }
 
+    /**
+     * Recherche un client par son identifiant dans la liste des clients connectés.
+     *
+     * @param clientId L'identifiant du client à rechercher.
+     * @return Le client correspondant s'il est trouvé, sinon null.
+     */
     private Client findClientById(String clientId) {
         for (Client client : connectedClients) {
             if (client.getNomUtilisateur().equals(clientId)) {

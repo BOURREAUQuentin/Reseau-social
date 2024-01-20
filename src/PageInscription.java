@@ -12,23 +12,47 @@ import javafx.stage.Stage;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * La classe PageInscription représente la page d'inscription de l'application.
+ * Elle permet aux nouveaux utilisateurs de créer un compte.
+ */
 public class PageInscription {
     private Stage stage;
     private Map<String, Node> lesElementsGraphiques;
 
+    /**
+     * Constructeur de la classe PageInscription.
+     *
+     * @param stage La fenêtre principale de l'application.
+     */
     public PageInscription(Stage stage) {
         this.stage = stage;
         this.lesElementsGraphiques = new HashMap<>();
     }
 
+    /**
+     * Obtient la fenêtre principale de l'application.
+     *
+     * @return La fenêtre principale.
+     */
     public Stage getStage(){
         return this.stage;
     }
 
+    /**
+     * Obtient les éléments graphiques de la page d'inscription.
+     *
+     * @return Une map contenant les éléments graphiques.
+     */
     public Map<String, Node> getLesElementsGraphiques(){
         return this.lesElementsGraphiques;
     }
 
+    /**
+     * Crée et retourne le panneau d'inscription avec ses éléments graphiques.
+     *
+     * @return Un objet GridPane représentant le panneau d'inscription.
+     */
     private GridPane getPanelInscription(){
         GridPane gridPaneInscription = new GridPane();
         gridPaneInscription.setStyle("-fx-background-color: rgb(21, 203, 153)");
@@ -72,6 +96,9 @@ public class PageInscription {
         return gridPaneInscription;
     }
 
+    /**
+     * Affiche la page d'inscription de l'application.
+     */
     public void showPageInscription() {
         stage.setTitle("Inscription");
         GridPane gridPaneInscription = this.getPanelInscription();
