@@ -13,7 +13,7 @@ public class UtilisateurSQL {
     public UtilisateurSQL(){
     }
 
-    public int prochainIdUtilisateur(){
+    public int prochainIdUtilisateur() throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
@@ -29,7 +29,7 @@ public class UtilisateurSQL {
         return 0;
     }
 
-    public List<Utilisateur> getLesUtilisateurs(){
+    public List<Utilisateur> getLesUtilisateurs() throws ClassNotFoundException{
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR");
@@ -64,7 +64,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur){
+    public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -99,7 +99,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public boolean utilisateurExiste(String nomUtilisateur){
+    public boolean utilisateurExiste(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -115,7 +115,7 @@ public class UtilisateurSQL {
         }
     }
 
-    public boolean supprimerUtilisateur(String nomUtilisateur){
+    public boolean supprimerUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);

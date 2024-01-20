@@ -8,7 +8,7 @@ public class LikeSQL {
     public LikeSQL(){
     }
 
-    private int getIdUtilisateur(String pseudoClient){
+    private int getIdUtilisateur(String pseudoClient) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, pseudoClient);
@@ -24,7 +24,7 @@ public class LikeSQL {
         }
     }
 
-    public void ajouterLike(int idMessage, String nomUtilisateurClient){
+    public void ajouterLike(int idMessage, String nomUtilisateurClient) throws ClassNotFoundException{
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
             PreparedStatement ps2 = MainClient.getInstance().getSqlConnect().prepareStatement("insert into LIKE (idM, idU) values (?, ?)");
@@ -37,7 +37,7 @@ public class LikeSQL {
         }
     }
 
-    public void supprimerLike(int idMessage, String nomUtilisateurClient){
+    public void supprimerLike(int idMessage, String nomUtilisateurClient) throws ClassNotFoundException{
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("delete from LIKE where idM = ? and idU = ?");
@@ -50,7 +50,7 @@ public class LikeSQL {
         }
     }
 
-    public int nbLikesMessage(int idMessage){
+    public int nbLikesMessage(int idMessage) throws ClassNotFoundException{
         int nbLikes = 0;
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT count(*) nbLikes FROM LIKE where idM = ?");

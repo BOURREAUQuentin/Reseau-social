@@ -14,7 +14,7 @@ public class AbonneSQL{
     public AbonneSQL(){
     }
 
-    public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur){
+    public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
@@ -33,7 +33,7 @@ public class AbonneSQL{
         }
     }
 
-    private int getIdUtilisateur(String nomUtilisateur){
+    private int getIdUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
@@ -49,7 +49,7 @@ public class AbonneSQL{
         }
     }
  
-    public List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur){
+    public List<Utilisateur> getUtilisateurAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
@@ -68,7 +68,7 @@ public class AbonneSQL{
         }
     }
 
-    public List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur){
+    public List<Utilisateur> getUtilisateurNonAbonnes(String nomUtilisateur) throws ClassNotFoundException{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
@@ -88,7 +88,7 @@ public class AbonneSQL{
         }
     }
 
-    public void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible){
+    public void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
             ps.setString(1, nomUtilisateur);
@@ -100,7 +100,7 @@ public class AbonneSQL{
         }
     }
 
-    public void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible){
+    public void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible) throws ClassNotFoundException{
         try{
             PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
             ps.setString(1, nomUtilisateur);
