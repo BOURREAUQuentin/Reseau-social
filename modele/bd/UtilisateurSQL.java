@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import modele.java.Utilisateur;
-
 /**
  * La classe UtilisateurSQL gère les opérations liées aux utilisateurs dans une base de données.
  */
