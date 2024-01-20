@@ -10,7 +10,7 @@
         "/usr/share/openjfx/lib/javafx.web.jar"
     ],
     "java.project.sourcePaths": [
-        "modele",
-        "src"
+        "src",
+        "modele"
     ]
 }
