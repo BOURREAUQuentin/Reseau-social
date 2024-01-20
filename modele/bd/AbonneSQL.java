@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import modele.java.Utilisateur;
-
 /**
  * La classe AbonneSQL gère l'accès à la base de données pour les abonnements d'utilisateurs.
  * Elle fournit des méthodes pour récupérer la liste des utilisateurs auxquels un utilisateur est abonné,
