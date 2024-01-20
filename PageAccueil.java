@@ -18,13 +18,29 @@ public class PageAccueil {
 
     public PageAccueil(Stage stage, Client client) {
         this.stage = stage;
-        this.client = client;
+        PageAccueil.client = client;
         this.clientsNonAbonnes.getChildren().addAll(new Label("Non abonnés"));
         clientsAbonnements.getChildren().addAll(new Label("Abonnements"));
     }
 
     public void showPageAccueil(){
         BorderPane borderPane = new BorderPane();
+        // liste non amis
+        // Affichage des non-amis
+        for (String string : client.getClientsNonAbonnes()) {
+            HBox interieur = createFriendDisplay(string, client, false);
+            clientsNonAbonnes.getChildren().add(interieur);
+        }
+        borderPane.setLeft(clientsNonAbonnes);
+
+        // Affichage des amis
+        for (String string : client.getClientsAbonnements()) {
+            HBox interieur = createFriendDisplay(string, client, true);
+            clientsAbonnements.getChildren().add(interieur);
+        }
+        borderPane.setRight(clientsAbonnements);
+
+        // Panel en bas pour écrire des messages
         TextField messageInput = new TextField();
         Button sendButton = new Button("Envoyer");
         sendButton.setOnAction(e -> {
@@ -39,6 +55,11 @@ public class PageAccueil {
         messageBox.setSpacing(10);
         messageBox.setPadding(new Insets(10));
         borderPane.setBottom(messageBox);
+
+        // Panel au centre avec la zone des messages
+
+        scrollPane.setContent(lesMessages);
+        borderPane.setCenter(scrollPane);
 
         Scene scene = new Scene(borderPane, 850, 600);
         stage.setScene(scene);
