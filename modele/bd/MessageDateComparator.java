@@ -1,6 +1,3 @@
-package bd;
-
-import java.Message;
 import java.util.Comparator;
 
 public class MessageDateComparator implements Comparator<Message> {

@@ -1,5 +1,3 @@
-package bd;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,24 +8,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.spi.ResolveResult;
+public class UtilisateurSQL {
 
-import java.Utilisateur;
-import src.Client;
-
-import java.Utilisateur;
-import java.Message;
-
-public class ClientSQL {
-    /** connexion à la base de donnée */
-    private Connection connexion = Connexion.laConnexion;
-
-    public ClientSQL(){
+    public UtilisateurSQL(){
     }
 
-    public int prochainIdUtilisateur(){
+    public static int prochainIdUtilisateur() throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
             int maxIdUtilisateurActuel = 0;
             if (rs.next()) {
@@ -41,10 +29,10 @@ public class ClientSQL {
         return 0;
     }
 
-    public List<Utilisateur> getLesUtilisateur(){
+    public static List<Utilisateur> getLesUtilisateurs() throws ClassNotFoundException{
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
                 Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
@@ -58,9 +46,9 @@ public class ClientSQL {
         }
     }
 
-    public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse){
+    public static Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
             ps.setString(1, nomUtilisateur);
             ps.setString(2, motDePasse);
             ResultSet rs = ps.executeQuery();
@@ -76,9 +64,9 @@ public class ClientSQL {
         }
     }
 
-    public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur){
+    public static Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -93,16 +81,16 @@ public class ClientSQL {
         }
     }
 
-    public boolean ajouterClient(String nomUtilisateur, String motDePasse){
+    public static boolean ajouterUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
             if (utilisateurExiste(nomUtilisateur)){
                 return false;
             }
-            PreparedStatement ps = connexion.prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
-            ps.setInt(1, this.prochainIdUtilisateur());
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
+            ps.setInt(1, prochainIdUtilisateur());
             ps.setString(2, nomUtilisateur);
             ps.setString(3, motDePasse);
-            ResultSet rs = ps.executeQuery();
+            ps.executeUpdate();
             return true;
         }
         catch (SQLException e) {
@@ -111,9 +99,9 @@ public class ClientSQL {
         }
     }
 
-    public boolean utilisateurExiste(String nomUtilisateur){
+    public static boolean utilisateurExiste(String nomUtilisateur) throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -127,11 +115,11 @@ public class ClientSQL {
         }
     }
 
-    public boolean supprimerUtilisateur(String nomUtilisateur){
+    public static boolean supprimerUtilisateur(String nomUtilisateur) throws ClassNotFoundException{
         try{
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
-            ResultSet rs = ps.executeQuery();
+            ps.executeUpdate();
             return true;
         }
         catch (SQLException e) {
