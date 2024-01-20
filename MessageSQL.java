@@ -26,7 +26,7 @@ public class MessageSQL {
 
     public int prochainIdMessage(){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT max(idM) maxId FROM MESSAGE");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idM) maxId FROM MESSAGE");
             ResultSet rs = ps.executeQuery();
             int maxIdMessageActuel = 0;
             if (rs.next()) {
@@ -43,7 +43,7 @@ public class MessageSQL {
     public void ajouterMessage(String pseudoExpediteur, String contenu){
         try{
             // requete pour récupérer l'id de l'expéditeur
-            PreparedStatement ps = connexion.prepareStatement("SELECT idU FROM UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, pseudoExpediteur);
             ResultSet rs = ps.executeQuery();
             int idExpediteur = 0;
@@ -52,7 +52,7 @@ public class MessageSQL {
             }
 
             // requete pour l'ajout de message
-            PreparedStatement ps2 = connexion.prepareStatement("INSERT INTO MESSAGE (idM, contenuM, dateM, idU) VALUES (?, ?, ?, ?)");
+            PreparedStatement ps2 = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO MESSAGE (idM, contenuM, dateM, idU) VALUES (?, ?, ?, ?)");
             ps2.setInt(1, this.prochainIdMessage());
             ps2.setString(2, contenu);
             LocalDateTime now = LocalDateTime.now();
@@ -69,7 +69,7 @@ public class MessageSQL {
 
     public Message recupererMessageParId(int idMessage){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE Natural join UTILISATEUR where idM = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE Natural join UTILISATEUR where idM = ?");
             ps.setInt(1, idMessage);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -86,11 +86,11 @@ public class MessageSQL {
     public void supprimerMessage(int idMessage){
         try{
             // suppression des lignes dans la table LIKE où l'id message existe (contraintes clés étrangères)
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM LIKE WHERE idM = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM LIKE WHERE idM = ?");
             ps.setInt(1, idMessage);
             ps.executeUpdate();
             // suppression du message
-            PreparedStatement ps2 = connexion.prepareStatement("DELETE FROM MESSAGE WHERE idM = ?");
+            PreparedStatement ps2 = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM MESSAGE WHERE idM = ?");
             ps2.setInt(1, idMessage);
             ps2.executeUpdate();
         }
@@ -102,7 +102,7 @@ public class MessageSQL {
 
     public Message recupererMessage(String date, String nomUtilisateur, String contenu){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where contenuM = ? and dateM = ? and nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where contenuM = ? and dateM = ? and nomUtilisateur = ?");
             ps.setString(1, contenu);
             ps.setString(2, date);
             ps.setString(3, nomUtilisateur);
@@ -130,7 +130,7 @@ public class MessageSQL {
     private List<Message> recupererMessagesUtilisateur(String nomUtilisateur) {
         List<Message> messages = new ArrayList<>();
         try {
-            PreparedStatement ps = connexion.prepareStatement("select idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idM, contenuM, dateM, idU, nomUtilisateur FROM MESSAGE natural join UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -147,7 +147,7 @@ public class MessageSQL {
     private List<Message> recupererMessagesAbonnements(String nomUtilisateur){
         List<Message> messages = new ArrayList<>();
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT M.idM, M.idU, M.contenuM, M.dateM, C.nomUtilisateur FROM MESSAGE M join ABONNE A on M.idU = A.abonneA join UTILISATEUR C on M.idU = C.idU where A.abonnementA = (select idU FROM UTILISATEUR where nomUtilisateur = ?) order by M.dateM desc");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT M.idM, M.idU, M.contenuM, M.dateM, C.nomUtilisateur FROM MESSAGE M join ABONNE A on M.idU = A.abonneA join UTILISATEUR C on M.idU = C.idU where A.abonnementA = (select idU FROM UTILISATEUR where nomUtilisateur = ?) order by M.dateM desc");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

@@ -4,7 +4,7 @@ import javafx.stage.Stage;
 public class MainClient extends Application {
     private Utilisateur utilisateurConnecte;
     private static MainClient instanceClient;
-    private Connexion connexion;
+    private ConnexionBD connexion;
 
     public static MainClient getInstance() {
         if (instanceClient == null) {
@@ -23,21 +23,33 @@ public class MainClient extends Application {
 
     @Override
     public void init() throws SQLException, ClassNotFoundException {
-        instance = this;
-        this.utilisateurBd = null;
+        instanceClient = this;
+        this.utilisateurConnecte = null;
         try {
-            if (sqlConnect == null) {
-                sqlConnect = new ConnexionBd();
-                sqlConnect.connect("localhost", "SAE_RESEAUX", "temha", "temha1011");
+            if (connexion == null) {
+                connexion = new ConnexionBD();
+                connexion.connect("localhost", "SAE", "quentin", "quentin");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public ConnexionBD getSqlConnect() throws ClassNotFoundException {
+        try {
+            if (connexion == null) {
+                connexion = new ConnexionBD();
+                connexion.connect("localhost", "SAE", "quentin", "quentin");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connexion;
+    }
+
     @Override
     public void start(Stage primaryStage) {
-        PageConnexion pageConnexion = new PageConnexion(primaryStage, );
+        PageConnexion pageConnexion = new PageConnexion(primaryStage);
         pageConnexion.showPageConnexion();
     }
 

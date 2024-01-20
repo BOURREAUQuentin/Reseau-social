@@ -4,24 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LikeSQL {
-    /** connexion à la base de donnée */
-    private Connection connexion;
 
-    public LikeSQL(Connexion connexionBD){
-        try{
-            this.connexion = connexionBD.getConnection();
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
+    public LikeSQL(){
     }
 
     private int getIdUtilisateur(String pseudoClient){
         try{
-            PreparedStatement ps = connexion.prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, pseudoClient);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -38,7 +27,7 @@ public class LikeSQL {
     public void ajouterLike(int idMessage, String nomUtilisateurClient){
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
-            PreparedStatement ps2 = connexion.prepareStatement("insert into LIKE (idM, idU) values (?, ?)");
+            PreparedStatement ps2 = MainClient.getInstance().getSqlConnect().prepareStatement("insert into LIKE (idM, idU) values (?, ?)");
             ps2.setInt(1, idMessage);
             ps2.setInt(2, idClient);
             ps2.executeUpdate();
@@ -51,7 +40,7 @@ public class LikeSQL {
     public void supprimerLike(int idMessage, String nomUtilisateurClient){
         try{
             int idClient = this.getIdUtilisateur(nomUtilisateurClient);
-            PreparedStatement ps = connexion.prepareStatement("delete from LIKE where idM = ? and idU = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("delete from LIKE where idM = ? and idU = ?");
             ps.setInt(1, idMessage);
             ps.setInt(2, idClient);
             ps.executeUpdate();
@@ -64,7 +53,7 @@ public class LikeSQL {
     public int nbLikesMessage(int idMessage){
         int nbLikes = 0;
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT count(*) nbLikes FROM LIKE where idM = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT count(*) nbLikes FROM LIKE where idM = ?");
             ps.setInt(1, idMessage);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){

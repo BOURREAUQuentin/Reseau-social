@@ -9,24 +9,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class UtilisateurSQL {
-    /** connexion à la base de donnée */
-    private Connection connexion;
 
-    public UtilisateurSQL(Connexion connexionBD){
-        try{
-            this.connexion = connexionBD.getConnection();
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
+    public UtilisateurSQL(){
     }
 
     public int prochainIdUtilisateur(){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT max(idU) maxId FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
             int maxIdUtilisateurActuel = 0;
             if (rs.next()) {
@@ -43,7 +32,7 @@ public class UtilisateurSQL {
     public List<Utilisateur> getLesUtilisateurs(){
         List<Utilisateur> lesUtilisateurs = new ArrayList<>();
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR");
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
                 Utilisateur utilisateur = new Utilisateur(rs.getInt(1), rs.getString(2), rs.getString(3));
@@ -59,7 +48,7 @@ public class UtilisateurSQL {
 
     public Utilisateur getUtilisateur(String nomUtilisateur, String motDePasse) throws ClassNotFoundException{
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ? AND mdpU = ?");
             ps.setString(1, nomUtilisateur);
             ps.setString(2, motDePasse);
             ResultSet rs = ps.executeQuery();
@@ -77,7 +66,7 @@ public class UtilisateurSQL {
 
     public Utilisateur getUtilisateurParNomUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps= connexion.prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps= MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -97,7 +86,7 @@ public class UtilisateurSQL {
             if (utilisateurExiste(nomUtilisateur)){
                 return false;
             }
-            PreparedStatement ps = connexion.prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO UTILISATEUR (idU, nomUtilisateur, mdpU) values (?,?,?)");
             ps.setInt(1, this.prochainIdUtilisateur());
             ps.setString(2, nomUtilisateur);
             ps.setString(3, motDePasse);
@@ -112,7 +101,7 @@ public class UtilisateurSQL {
 
     public boolean utilisateurExiste(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT nomUtilisateur FROM UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -128,7 +117,7 @@ public class UtilisateurSQL {
 
     public boolean supprimerUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM UTILISATEUR WHERE nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             return true;

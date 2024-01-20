@@ -10,27 +10,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class AbonneSQL{
-
-    /** connexion à la base de donnée */
-    private Connection connexion;
     
-    public AbonneSQL(Connexion connexionBD){
-        try{
-            this.connexion = connexionBD.getConnection();
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
+    public AbonneSQL(){
     }
 
     public List<Utilisateur> getUtilisateursAbonnements(String nomUtilisateur){
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonnementA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -47,7 +35,7 @@ public class AbonneSQL{
 
     private int getIdUtilisateur(String nomUtilisateur){
         try{
-            PreparedStatement ps = connexion.prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("select idU from UTILISATEUR where nomUtilisateur = ?");
             ps.setString(1, nomUtilisateur);
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
@@ -65,7 +53,7 @@ public class AbonneSQL{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonneA = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT idU, nomUtilisateur, mdpU FROM ABONNE natural join UTILISATEUR where abonneA = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -84,7 +72,7 @@ public class AbonneSQL{
         List<Utilisateur> listeUtilisateurs = new ArrayList<>();
         try{
             int id = this.getIdUtilisateur(nomUtilisateur);
-            PreparedStatement ps = connexion.prepareStatement("SELECT * FROM UTILISATEUR.U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("SELECT * FROM UTILISATEUR.U WHERE U.idU != (SELECT idU FROM UTILISATEUR WHERE nomUtilisateur = ?) AND U.idU NOT IN (SELECT ABONNE.abonnementA FROM ABONNE WHERE ABONNE.abonneA = ?)");
             ps.setString(1, nomUtilisateur);
             ps.setInt(2, id);
             ResultSet rs = ps.executeQuery();
@@ -102,7 +90,7 @@ public class AbonneSQL{
 
     public void ajouterAbonnement(String nomUtilisateur, String nomUtilisateurCible){
         try{
-            PreparedStatement ps = connexion.prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("INSERT INTO ABONNE (abonnementA, abonneA) values (?,?)");
             ps.setString(1, nomUtilisateur);
             ps.setString(2, nomUtilisateurCible);
             ps.executeUpdate();
@@ -114,7 +102,7 @@ public class AbonneSQL{
 
     public void supprimerAbonnement(String nomUtilisateur, String nomUtilisateurCible){
         try{
-            PreparedStatement ps = connexion.prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
+            PreparedStatement ps = MainClient.getInstance().getSqlConnect().prepareStatement("DELETE FROM ABONNE where abonnementA = ? AND abonneA = ?");
             ps.setString(1, nomUtilisateur);
             ps.setString(2, nomUtilisateurCible);
             ps.executeUpdate();
