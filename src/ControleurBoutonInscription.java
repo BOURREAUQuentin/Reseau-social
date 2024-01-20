@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import bd.ClientSQL;
 import src.Client;
+import src.MainClient;
 
 public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
 
@@ -40,10 +41,9 @@ public class ControleurBoutonInscription implements EventHandler<ActionEvent>{
                 if (clientConnecte != null){
                     Client client = new Client(nomUtilisateur);
                     client.connexionServeur();
-                    connexion.setUtilisateurBd(clientConnecte);
-                    PagePrincipale pagePrincipale = new PagePrincipale(stage,client);
-                    pagePrincipale.show();
-                    
+                    MainClient.getInstance().setClientConnecte(clientConnecte);
+                    PageAccueil pageAccueil = new PageAccueil(this.appli.getStage(), client);
+                    pageAccueil.show();
                 }
             }
             catch(ClassNotFoundException e){

@@ -23,6 +23,10 @@ public class PageInscription {
         this.lesElementsGraphiques = new HashMap<>();
     }
 
+    public Stage getStage(){
+        return this.stage;
+    }
+
     private GridPane getPanelInscription(){
         GridPane gridPaneInscription = new GridPane();
         gridPaneInscription.setStyle("-fx-background-color: rgb(21, 203, 153)");
@@ -60,8 +64,8 @@ public class PageInscription {
         gridPaneInscription.add(textFieldNomUtilisateur, 0, 1);
         gridPaneInscription.add(labelPassword, 1, 0);
         gridPaneInscription.add(passwordField, 1, 1);
-        gridPaneInscription.add(boutonInscription, 2, 0, 2);
-        gridPaneInscription.add(boutonConnexion, 3, 0, 2);
+        gridPaneInscription.add(boutonInscription, 2, 0, 2, 1);
+        gridPaneInscription.add(boutonConnexion, 3, 0, 2, 1);
         
         return gridPaneInscription;
     }
@@ -72,34 +76,6 @@ public class PageInscription {
         Scene scene = new Scene(gridPaneInscription, 450, 450);
         stage.setScene(scene);
         stage.show();
-    }
-
-    private void handleboutonInscription(String username, String password, String email) {
-        Boolean isCreated = false;
-        try {
-            isCreated = UtilisateurBd.ajouterUtilisateur(username, email, password);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (isCreated){
-            try{
-                if (UtilisateurBd.getUtilisateur(username, password) != null){
-                    Client client = new Client(username);
-                    
-                    client.lancement();
-                    Main.getInstance().setUtilisateurBd(UtilisateurBd.getUtilisateur(username, password));
-                    PagePrincipale pagePrincipale = new PagePrincipale(stage,client);
-                    pagePrincipale.show();
-                    
-                }
-            }
-            catch(ClassNotFoundException e){
-                e.printStackTrace();
-            }
-        }
-        else {
-            showAlert("Erreur de création de compte", "Ce pseudo est déjà utilisé. Veuillez en choisir un autre.");
-        }
     }
 
     /**
