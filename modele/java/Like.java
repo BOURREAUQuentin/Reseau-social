@@ -1,19 +1,19 @@
 package java;
 
 public class Like{
-    private int idMessage;
-    private int idUtilisateur;
+    private Message message;
+    private Utilisateur utilisateur;
 
-    public Like(int idMessage, int idUtilisateur){
-        this.idMessage = idMessage;
-        this.idUtilisateur = idUtilisateur;
+    public Like(Message message, Utilisateur utilisateur){
+        this.message = message;
+        this.utilisateur = utilisateur;
     }
 
     public int getIdMessage(){
-        return this.idMessage;
+        return this.message.getidMessage();
     }
 
     public int getIdUtilisateur(){
-        return this.idUtilisateur;
+        return this.utilisateur.getIdUtilisateur();
     }
 }
